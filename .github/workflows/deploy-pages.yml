@@ -18,7 +18,7 @@ jobs:
     env:
       PUBLIC_DEPLOY_TARGET: github-pages
       PUBLIC_SITE_URL: https://sarmyento.github.io/tete-santos-preview
-      PUBLIC_BASE_PATH: /tete-santos-preview
+      PUBLIC_BASE_PATH: /tete-santos-preview/
     steps:
       - name: Checkout
         uses: actions/checkout@v4

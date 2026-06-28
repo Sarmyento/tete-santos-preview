@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 const previewSite = 'https://sarmyento.github.io/tete-santos-preview';
-const previewBase = '/tete-santos-preview';
+const previewBase = '/tete-santos-preview/';
 const isPreviewBuild = process.env.PUBLIC_DEPLOY_TARGET === 'github-pages';
 
 /** @type {import('astro/config').SiteConfig} */
