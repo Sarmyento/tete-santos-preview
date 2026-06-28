@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ListingsCatalog from '../components/sections/ListingsCatalog.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import RevealInit from '../components/sections/RevealInit.astro';
+import { site } from '../config/site';
+import { getListings } from '../lib/listings';
+
+const listings = getListings();
+---
+
+<BaseLayout
+  title={`Imóveis | ${site.name}`}
+  description={`Busca avançada de imóveis de alto luxo em ${site.region}. Filtre por localização, tipo, quartos, área e preço.`}
+>
+  <section class="page-hero section reveal">
+    <div class="container page-hero__inner">
+      <p class="eyebrow">Portfólio</p>
+      <h1>Imóveis selecionados</h1>
+      <p class="page-hero__lead">
+        Use a busca avançada para refinar o portfólio por bairro, tipo, quartos, área e faixa de preço.
+        Feed mock em dev; integração CRM na fase P4.
+      </p>
+    </div>
+  </section>
+
+  <ListingsCatalog listings={listings} />
+  <CtaBand />
+  <RevealInit />
+</BaseLayout>
+
+<style>
+  .page-hero {
+    padding-top: calc(var(--header-height) + var(--space-6));
+  }
+
+  .page-hero__inner {
+    max-width: 760px;
+  }
+
+  .page-hero__lead {
+    color: var(--color-muted);
+    max-width: 52ch;
+  }
+</style>

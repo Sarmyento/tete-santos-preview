@@ -1,0 +1,56 @@
+---
+interface Item {
+  title: string;
+  description: string;
+}
+
+interface Props {
+  title?: string;
+  items: Item[];
+}
+
+const { title = 'Por que nos escolher', items } = Astro.props;
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="reveal">{title}</h2>
+    <ul class="grid">
+      {
+        items.map((item) => (
+          <li class="card reveal">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0 0;
+  }
+
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .card h3 {
+    color: var(--color-primary);
+  }
+</style>

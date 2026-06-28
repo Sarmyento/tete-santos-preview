@@ -1,0 +1,122 @@
+---
+import { site } from '../../config/site';
+import BrandLogo from './BrandLogo.astro';
+import { sitePath } from '../../lib/paths';
+
+const year = new Date().getFullYear();
+const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`;
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <a class="footer__logo" href={sitePath('/')} aria-label={`${site.name}, pagina inicial`}>
+        <BrandLogo variant="dark" />
+      </a>
+      <p class="footer__tagline">{site.tagline}</p>
+      <p class="footer__region">{site.taglineSecondary}</p>
+    </div>
+    <div>
+      <p class="footer__label">Navegação</p>
+      <ul class="footer__links">
+        <li><a href={sitePath('/imoveis')}>Imóveis</a></li>
+        <li><a href={sitePath('/sobre')}>Sobre</a></li>
+        <li><a href={sitePath('/servicos')}>Serviços</a></li>
+        <li><a href={sitePath('/contato')}>Contato</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer__label">Contato</p>
+      <ul class="footer__links">
+        <li><a href={waUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+        <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+        <li>{site.contact.phone}</li>
+        {
+          site.social.instagram && (
+            <li>
+              <a href={site.social.instagram} target="_blank" rel="noopener noreferrer">
+                @corretoratetesantos
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+  <div class="container footer__copy reveal">
+    <span class="motion-line motion-line--footer" aria-hidden="true"></span>
+    <small>&copy; {year} {site.name}. Todos os direitos reservados.</small>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-primary-deep);
+    color: var(--color-background);
+    padding-block: var(--space-10) var(--space-6);
+  }
+
+  .footer a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--motion-fast) var(--ease-smooth);
+  }
+
+  .footer a:hover {
+    color: var(--color-accent);
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+
+  .footer__logo :global(.brand-logo) {
+    height: clamp(72px, 9vw, 96px);
+    margin-bottom: var(--space-3);
+  }
+
+  .footer__tagline {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    margin-bottom: var(--space-1);
+  }
+
+  .footer__region {
+    color: color-mix(in srgb, var(--color-background) 75%, transparent);
+    font-size: 0.95rem;
+  }
+
+  .footer__label {
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-2);
+  }
+
+  .footer__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .footer__copy {
+    padding-top: var(--space-4);
+    opacity: 0.8;
+  }
+
+  .footer__copy .motion-line {
+    margin-bottom: var(--space-3);
+    background: color-mix(in srgb, var(--color-background) 18%, transparent);
+  }
+</style>

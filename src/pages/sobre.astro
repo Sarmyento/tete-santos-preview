@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RevealInit from '../components/sections/RevealInit.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import { site } from '../config/site';
+import { assetPath } from '../lib/paths';
+---
+
+<BaseLayout
+  title={`Sobre | ${site.name}`}
+  description={`Conheça ${site.name}, corretora de imóveis de alto luxo em ${site.region}.`}
+>
+  <section class="page-hero section--dark section">
+    <div class="container page-hero__inner reveal">
+      <p class="eyebrow">Sobre</p>
+      <h1>Patrimônio conduzido com requinte e estratégia</h1>
+      <p class="page-hero__lead">
+        Atuação consultiva para quem busca exclusividade real no mercado imobiliário de alto padrão.
+      </p>
+    </div>
+  </section>
+
+  <section class="section reveal">
+    <div class="container about-page">
+      <div class="about-page__media">
+        <img src={assetPath('/images/about/tete-P2-headshot-3quartos.png')} alt="Tetê Santos" loading="lazy" width="640" height="640" />
+      </div>
+      <div>
+        <h2>Quem é Tetê Santos</h2>
+        <p>
+          Corretora especializada em imóveis de alto luxo no {site.region}. Minha abordagem
+          combina leitura de mercado, sensibilidade estética e proximidade humana.
+        </p>
+        <p>
+          Não trabalho com volume. Trabalho com curadoria: cada cliente recebe atenção dedicada,
+          cada imóvel recebe posicionamento pensado para valorizar requinte, arquitetura e
+          potencial de negociação.
+        </p>
+        <p>
+          O foco é vender bem: estratégia de precificação, preparação do ativo, narrativa premium
+          e condução segura em todas as etapas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight reveal">
+    <div class="container about-values">
+      <div>
+        <p class="eyebrow">Região</p>
+        <h2>{site.taglineSecondary}</h2>
+        <p>{site.region}</p>
+      </div>
+      <div>
+        <p class="eyebrow">Valores</p>
+        <ul>
+          <li>Exclusividade com discrição</li>
+          <li>Consultoria antes da transação</li>
+          <li>Comunicação clara e elegante</li>
+          <li>Compromisso com resultado</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+  <RevealInit />
+</BaseLayout>
+
+<style>
+  .page-hero {
+    padding-top: calc(var(--header-height) + var(--space-8));
+  }
+
+  .page-hero__inner {
+    max-width: 760px;
+  }
+
+  .page-hero__lead {
+    font-size: 1.15rem;
+    color: color-mix(in srgb, var(--color-background) 84%, transparent);
+    max-width: 52ch;
+  }
+
+  .about-page {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .about-page {
+      grid-template-columns: 0.9fr 1.1fr;
+    }
+  }
+
+  .about-page__media img {
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-card);
+  }
+
+  .about-values {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    background: var(--color-white);
+  }
+
+  @media (min-width: 768px) {
+    .about-values {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .about-values ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--color-muted);
+  }
+
+  .about-values li + li {
+    margin-top: var(--space-1);
+  }
+</style>

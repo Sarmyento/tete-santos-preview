@@ -1,0 +1,114 @@
+---
+import { sitePath } from '../../lib/paths';
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+
+const services = [
+  {
+    title: 'Compra',
+    description: 'Curadoria de imóveis alinhados ao seu estilo de vida, com visitas selecionadas e análise estratégica.',
+  },
+  {
+    title: 'Venda',
+    description: 'Posicionamento premium, narrativa de valor e condução consultiva até a assinatura.',
+  },
+  {
+    title: 'Avaliação',
+    description: 'Leitura técnica e de mercado para decisões seguras sobre patrimônio de alto padrão.',
+  },
+  {
+    title: 'Captação',
+    description: 'Estratégia de entrada no mercado com discrição, requinte e foco em resultado.',
+  },
+];
+---
+
+<section class:list={['section', 'reveal', { 'section--dark': !compact }]}>
+  <div class="container">
+    {
+      !compact && (
+        <div class="section-header">
+          <p class="eyebrow">Serviços</p>
+          <h2>Processo consultivo em cada etapa</h2>
+          <p>Atuação completa para quem valoriza exclusividade, clareza e resultado.</p>
+        </div>
+      )
+    }
+    {
+      compact && (
+        <div class="section-header">
+          <p class="eyebrow">Como posso ajudar</p>
+          <h2>Serviços</h2>
+        </div>
+      )
+    }
+    <div class="services-grid reveal-stagger">
+      {
+        services.map((service) => (
+          <article class="service-card">
+            <span class="motion-line motion-line--wide" aria-hidden="true"></span>
+            <h3>{service.title}</h3>
+            <p>{service.description}</p>
+          </article>
+        ))
+      }
+    </div>
+    {
+      !compact && (
+        <div class="services-grid__footer">
+          <a class="btn btn-accent btn-motion" href={sitePath('/servicos')}>
+            Ver serviços completos
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .services-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .services-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .service-card {
+    padding: var(--space-4);
+    border: 1px solid color-mix(in srgb, var(--color-background) 18%, transparent);
+    background: color-mix(in srgb, var(--color-background) 4%, transparent);
+  }
+
+  .section:not(.section--dark) .service-card {
+    border-color: var(--color-line);
+    background: var(--color-white);
+  }
+
+  .service-card .motion-line {
+    margin-bottom: var(--space-3);
+  }
+
+  .service-card h3 {
+    font-size: 1.35rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .service-card p {
+    color: color-mix(in srgb, currentColor 78%, transparent);
+    margin: 0;
+  }
+
+  .services-grid__footer {
+    margin-top: var(--space-6);
+    display: flex;
+    justify-content: center;
+  }
+</style>

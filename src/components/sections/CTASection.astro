@@ -1,0 +1,45 @@
+---
+interface Props {
+  title?: string;
+  text?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  title = 'Pronto para comecar?',
+  text = 'Entre em contato e receba um atendimento personalizado.',
+  ctaLabel = 'Chamar no WhatsApp',
+  ctaHref = '#',
+} = Astro.props;
+---
+
+<section class="cta section reveal" id="contato">
+  <div class="container cta__inner">
+    <h2>{title}</h2>
+    <p>{text}</p>
+    <a class="btn btn-secondary" href={ctaHref}>{ctaLabel}</a>
+  </div>
+</section>
+
+<style>
+  .cta {
+    background: var(--color-primary);
+    color: #fff;
+    text-align: center;
+  }
+
+  .cta h2 {
+    color: #fff;
+  }
+
+  .cta__inner {
+    max-width: 560px;
+  }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--color-primary);
+    border-color: #fff;
+  }
+</style>

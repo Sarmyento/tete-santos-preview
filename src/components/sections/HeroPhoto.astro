@@ -1,0 +1,70 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  subtitle,
+  ctaLabel = 'Fale conosco',
+  ctaHref = '#contato',
+  imageSrc = '/hero-placeholder.svg',
+  imageAlt = '',
+} = Astro.props;
+---
+
+<section class="hero-photo section">
+  <div class="container hero-photo__grid">
+    <div class="hero-photo__copy reveal">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {subtitle && <p class="lead">{subtitle}</p>}
+      {ctaHref && <a class="btn btn-primary" href={ctaHref}>{ctaLabel}</a>}
+    </div>
+    <div class="hero-photo__media reveal">
+      <img src={imageSrc} alt={imageAlt} width="640" height="480" loading="eager" fetchpriority="high" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-photo__grid {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .hero-photo__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--text-small);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    max-width: 42ch;
+    margin-bottom: var(--space-3);
+  }
+
+  .hero-photo__media img {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    object-fit: cover;
+  }
+</style>

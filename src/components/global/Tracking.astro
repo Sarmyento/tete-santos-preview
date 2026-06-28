@@ -1,0 +1,18 @@
+---
+/** GA4 / Meta: ativar via PUBLIC_GA4_ID no .env (Cloudflare Pages). */
+const ga4 = import.meta.env.PUBLIC_GA4_ID;
+---
+
+{ga4 && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}></script>
+    <script is:inline define:vars={{ ga4 }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', ga4);
+    </script>
+  </>
+)}

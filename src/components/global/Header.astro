@@ -1,0 +1,255 @@
+---
+import { site } from '../../config/site';
+import BrandLogo from './BrandLogo.astro';
+import { isCurrentPath, sitePath } from '../../lib/paths';
+
+interface Props {
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
+
+const nav = [
+  { path: '/', label: 'Início' },
+  { path: '/imoveis', label: 'Imóveis' },
+  { path: '/sobre', label: 'Sobre' },
+  { path: '/servicos', label: 'Serviços' },
+  { path: '/contato', label: 'Contato' },
+];
+
+const current = Astro.url.pathname;
+const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`;
+---
+
+<header class:list={['header', { 'header--overlay': overlay }]} data-site-header>
+  <div class="container header__inner">
+    <a class="logo" href={sitePath('/')} aria-label={`${site.name}, pagina inicial`}>
+      <BrandLogo variant="light" class="logo__light" />
+      <BrandLogo variant="dark" class="logo__hero" />
+    </a>
+    <nav class="nav-desktop" aria-label="Principal">
+      <ul class="nav">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={sitePath(item.path)}
+                aria-current={isCurrentPath(item.path, current) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <a class="btn btn-accent btn-motion header__cta" href={waUrl} target="_blank" rel="noopener noreferrer">
+      Agendar visita
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" data-menu-toggle>
+      <span class="sr-only">Abrir menu</span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+  <nav class="nav-mobile" id="mobile-nav" hidden data-mobile-nav>
+    <ul>
+      {
+        nav.map((item) => (
+          <li>
+            <a href={sitePath(item.path)}>{item.label}</a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={waUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const header = document.querySelector('[data-site-header]');
+  const menuToggle = document.querySelector('[data-menu-toggle]');
+  const mobileNav = document.querySelector('[data-mobile-nav]');
+
+  const syncScroll = () => {
+    header?.classList.toggle('header--scrolled', window.scrollY > 48);
+  };
+
+  window.addEventListener('scroll', syncScroll, { passive: true });
+  syncScroll();
+
+  menuToggle?.addEventListener('click', () => {
+    const open = menuToggle.getAttribute('aria-expanded') === 'true';
+    menuToggle.setAttribute('aria-expanded', String(!open));
+    mobileNav?.toggleAttribute('hidden', open);
+  });
+</script>
+
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: color-mix(in srgb, var(--color-background) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid transparent;
+    transition:
+      background var(--motion-base) var(--ease-smooth),
+      border-color var(--motion-base) var(--ease-smooth),
+      box-shadow var(--motion-base) var(--ease-smooth);
+  }
+
+  .header--overlay {
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+
+  .header--overlay.header--scrolled,
+  .header--scrolled {
+    background: color-mix(in srgb, var(--color-background) 96%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom-color: var(--color-line);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height);
+    gap: var(--space-3);
+    transition: min-height var(--motion-base) var(--ease-smooth);
+  }
+
+  .header--scrolled .header__inner {
+    min-height: var(--header-height-scrolled);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .logo :global(.brand-logo) {
+    height: clamp(62px, 7.8vw, 83px);
+    transition: height var(--motion-base) var(--ease-smooth), opacity var(--motion-base) var(--ease-smooth);
+  }
+
+  .logo :global(.logo__hero) {
+    display: none;
+  }
+
+  .header--overlay:not(.header--scrolled) .logo :global(.logo__light) {
+    display: none;
+  }
+
+  .header--overlay:not(.header--scrolled) .logo :global(.logo__hero) {
+    display: block;
+    height: clamp(62px, 7.8vw, 83px);
+  }
+
+  .header--overlay.header--scrolled .logo :global(.logo__light),
+  .header--scrolled .logo :global(.logo__light) {
+    height: clamp(62px, 7.8vw, 83px);
+  }
+
+  .nav {
+    display: flex;
+    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    transition: color var(--motion-fast) var(--ease-smooth);
+  }
+
+  .header--overlay:not(.header--scrolled) .nav a {
+    color: var(--color-background);
+  }
+
+  .nav a:hover,
+  .nav a[aria-current='page'] {
+    color: var(--color-accent-dark);
+  }
+
+  .header--overlay:not(.header--scrolled) .nav a:hover,
+  .header--overlay:not(.header--scrolled) .nav a[aria-current='page'] {
+    color: var(--color-accent);
+  }
+
+  .header__cta {
+    font-size: 0.875rem;
+    padding-inline: var(--space-3);
+    white-space: nowrap;
+  }
+
+  .menu-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .menu-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--color-ink);
+    transition: background var(--motion-fast) var(--ease-smooth);
+  }
+
+  .header--overlay:not(.header--scrolled) .menu-toggle span {
+    background: var(--color-background);
+  }
+
+  .nav-mobile {
+    background: var(--color-background);
+    border-top: 1px solid var(--color-line);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .nav-mobile ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .nav-mobile a {
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 1.05rem;
+  }
+
+  @media (max-width: 960px) {
+    .nav-desktop,
+    .header__cta {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+    }
+  }
+</style>

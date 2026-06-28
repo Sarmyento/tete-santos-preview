@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RevealInit from '../components/sections/RevealInit.astro';
+import { site } from '../config/site';
+
+const waNumber = site.whatsapp.number;
+const waBase = site.whatsapp.message;
+const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waBase)}`;
+---
+
+<BaseLayout
+  title={`Contato | ${site.name}`}
+  description={`Fale com ${site.name} por WhatsApp ou formulário.`}
+>
+  <section class="section page-contact">
+    <div class="container contact-grid reveal">
+      <div>
+        <p class="eyebrow">Contato</p>
+        <h1>Vamos conversar sobre o seu próximo imóvel</h1>
+        <p>
+          Preencha o formulário ou fale direto no WhatsApp. Resposta consultiva, sem pressão.
+        </p>
+        <ul class="contact-list">
+          <li>
+            <strong>WhatsApp</strong>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer">{site.contact.phone}</a>
+          </li>
+          <li>
+            <strong>E-mail</strong>
+            <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+          </li>
+          <li>
+            <strong>Região</strong>
+            <span>{site.region}</span>
+          </li>
+        </ul>
+      </div>
+
+      <form class="form" id="contact-form">
+        <label>
+          Nome
+          <input type="text" name="nome" required autocomplete="name" />
+        </label>
+        <label>
+          E-mail
+          <input type="email" name="email" required autocomplete="email" />
+        </label>
+        <label>
+          Telefone
+          <input type="tel" name="telefone" autocomplete="tel" />
+        </label>
+        <label>
+          Mensagem
+          <textarea name="msg" rows="5" required></textarea>
+        </label>
+        <button class="btn btn-primary btn-motion" type="submit">Enviar pelo WhatsApp</button>
+        <p class="form-note">Formulário P4: envio para Supabase/CRM entra na próxima fase.</p>
+      </form>
+    </div>
+  </section>
+  <RevealInit />
+</BaseLayout>
+
+<script define:vars={{ waNumber, waBase }}>
+  const form = document.getElementById('contact-form');
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const nome = String(data.get('nome') ?? '').trim();
+    const email = String(data.get('email') ?? '').trim();
+    const telefone = String(data.get('telefone') ?? '').trim();
+    const msg = String(data.get('msg') ?? '').trim();
+    const text = `${waBase}\n\nNome: ${nome}\nE-mail: ${email}\nTelefone: ${telefone}\n\n${msg}`;
+    const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  });
+</script>
+
+<style>
+  .page-contact {
+    padding-top: calc(var(--header-height) + var(--space-6));
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .contact-list {
+    list-style: none;
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .contact-list li {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .contact-list strong {
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+  }
+
+  .contact-list a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .contact-list a:hover {
+    color: var(--color-primary);
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-white);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-soft);
+  }
+
+  label {
+    display: grid;
+    gap: var(--space-1);
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    padding: var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-background);
+  }
+
+  .form-note {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+</style>

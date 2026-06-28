@@ -1,0 +1,59 @@
+/* Tetê Santos · Heritage Real · brand.json v2.1 */
+:root {
+  --color-primary: #5a2730;
+  --color-primary-deep: #3e1923;
+  --color-accent: #c2a26b;
+  --color-accent-dark: #9c7c4f;
+  --color-background: #f2ebe0;
+  --color-ink: #241a1b;
+  --color-muted: #6a5a52;
+  --color-line: #e2d8c9;
+  --color-white: #ffffff;
+
+  --color-neutral-900: var(--color-ink);
+  --color-neutral-100: var(--color-background);
+  --color-neutral-500: var(--color-muted);
+
+  --font-heading: "Fraunces", Georgia, serif;
+  --font-body: "Spectral", Georgia, serif;
+
+  --text-h1: clamp(48px, 9vw, 104px);
+  --text-h2: clamp(30px, 5vw, 50px);
+  --text-h3: 1.5rem;
+  --text-body: 1rem;
+  --text-small: 0.6875rem;
+  --text-eyebrow: 11px;
+
+  --space-base: 8px;
+  --space-1: calc(var(--space-base) * 1);
+  --space-2: calc(var(--space-base) * 2);
+  --space-3: calc(var(--space-base) * 3);
+  --space-4: calc(var(--space-base) * 4);
+  --space-6: calc(var(--space-base) * 6);
+  --space-8: calc(var(--space-base) * 8);
+  --space-10: calc(var(--space-base) * 10);
+  --space-12: calc(var(--space-base) * 12);
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  --shadow-soft: 0 4px 24px rgb(36 26 27 / 0.08);
+  --shadow-card: 0 12px 40px rgb(36 26 27 / 0.12);
+  --shadow-card-hover: 0 20px 48px rgb(36 26 27 / 0.16);
+
+  --motion-fast: 200ms;
+  --motion-base: 350ms;
+  --motion-slow: 700ms;
+  --motion-reveal: 1000ms;
+  --motion-hero: 6000ms;
+  --motion-hero-fade: 1200ms;
+
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-hero: ease-in-out;
+
+  --transition-base: var(--motion-base) var(--ease-smooth);
+  --header-height: 88px;
+  --header-height-scrolled: 72px;
+}

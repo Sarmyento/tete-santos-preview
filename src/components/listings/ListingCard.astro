@@ -1,0 +1,108 @@
+---
+import type { Listing } from '../../lib/listings';
+import { assetPath, sitePath } from '../../lib/paths';
+
+interface Props {
+  listing: Listing;
+}
+
+const { listing } = Astro.props;
+const detailUrl = sitePath(`/imoveis/${listing.slug}`);
+const fallbackImage = assetPath('/images/listings/fallback-property.svg');
+---
+
+<article class="listing-card card-hover">
+  <a class="listing-card__link" href={detailUrl}>
+    <div class="listing-card__media card-hover__media">
+      <img
+        src={listing.image}
+        alt={listing.title}
+        loading="lazy"
+        width="800"
+        height="600"
+        onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+      />
+      <span class="listing-card__type">{listing.type}</span>
+    </div>
+    <div class="listing-card__body">
+      <p class="listing-card__location">
+        {listing.neighborhood}, {listing.city}
+      </p>
+      <h3>{listing.title}</h3>
+      <p class="listing-card__meta">
+        {listing.bedrooms} quartos · {listing.area} m² · {listing.parking} vagas
+      </p>
+      <p class="listing-card__price">{listing.price}</p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .listing-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-line);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .listing-card__link {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+  }
+
+  .listing-card__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-line);
+  }
+
+  .listing-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .listing-card__type {
+    position: absolute;
+    left: var(--space-2);
+    top: var(--space-2);
+    background: color-mix(in srgb, var(--color-primary-deep) 88%, transparent);
+    color: var(--color-background);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .listing-card__body {
+    padding: var(--space-3);
+  }
+
+  .listing-card__location {
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+    margin-bottom: var(--space-1);
+  }
+
+  .listing-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-1);
+  }
+
+  .listing-card__meta {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .listing-card__price {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    color: var(--color-primary);
+    margin: 0;
+  }
+</style>

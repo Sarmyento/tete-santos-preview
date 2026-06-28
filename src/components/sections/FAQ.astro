@@ -1,0 +1,55 @@
+---
+interface Item {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  title?: string;
+  items: Item[];
+}
+
+const { title = 'Perguntas frequentes', items } = Astro.props;
+---
+
+<section class="section">
+  <div class="container faq">
+    <h2 class="reveal">{title}</h2>
+    <div class="faq__list">
+      {
+        items.map((item) => (
+          <details class="reveal">
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq__list {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  details {
+    background: #fff;
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    box-shadow: var(--shadow-soft);
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-family: var(--font-heading);
+  }
+
+  details[open] summary {
+    margin-bottom: var(--space-1);
+    color: var(--color-primary);
+  }
+</style>

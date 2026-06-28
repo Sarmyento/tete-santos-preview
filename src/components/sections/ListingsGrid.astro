@@ -1,0 +1,77 @@
+---
+import ListingCard from '../listings/ListingCard.astro';
+import type { Listing } from '../../lib/listings';
+import { sitePath } from '../../lib/paths';
+
+interface Props {
+  listings: Listing[];
+  title?: string;
+  description?: string;
+  showAllLink?: boolean;
+}
+
+const {
+  listings,
+  title = 'Imóveis em destaque',
+  description = 'Curadoria de alto padrão no Centro-Sul de Belo Horizonte e Nova Lima.',
+  showAllLink = true,
+} = Astro.props;
+---
+
+<section class="section reveal">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow">Portfólio</p>
+      <h2>{title}</h2>
+      <p>{description}</p>
+    </div>
+    <div class="listings-grid reveal-stagger">
+      {listings.map((listing) => <ListingCard listing={listing} />)}
+    </div>
+    {
+      showAllLink && (
+        <div class="listings-grid__footer">
+          <a class="btn btn-primary btn-motion" href={`${sitePath('/imoveis')}#filtros`}>
+            Busca avançada com filtros
+          </a>
+          <p class="listings-grid__hint">Refine por bairro, tipo, quartos, área e faixa de preço.</p>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .listings-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .listings-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .listings-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .listings-grid__footer {
+    margin-top: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+  }
+
+  .listings-grid__hint {
+    margin: 0;
+    max-width: 36ch;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+</style>

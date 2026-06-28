@@ -1,0 +1,93 @@
+---
+import '../styles/global.css';
+import Header from '../components/global/Header.astro';
+import Footer from '../components/global/Footer.astro';
+import WhatsAppFloat from '../components/global/WhatsAppFloat.astro';
+import Tracking from '../components/global/Tracking.astro';
+import { site } from '../config/site';
+import { organizationJsonLd, websiteJsonLd, localBusinessJsonLd } from '../lib/seo';
+import { assetPath } from '../lib/paths';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  headerOverlay?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title = `${site.name} | ${site.tagline}`,
+  description = `${site.tagline} ${site.taglineSecondary}. Atuação consultiva em imóveis de alto luxo em ${site.region}.`,
+  image = assetPath('/images/hero/tete-H1-hero-formal.png'),
+  noindex = true,
+  jsonLd,
+  headerOverlay = false,
+  bodyClass = '',
+} = Astro.props;
+
+const fontLink =
+  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap';
+
+const origin = Astro.site ?? new URL(site.domain);
+const canonical = new URL(Astro.url.pathname, origin).href;
+const ogImage = new URL(image, origin).href;
+
+const baseLd = [
+  organizationJsonLd(site, origin.href),
+  websiteJsonLd(site, origin.href),
+  localBusinessJsonLd(site, origin.href),
+];
+const pageLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const allLd = [...baseLd, ...pageLd];
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#5A2730" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="pt_BR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" type="image/svg+xml" href={assetPath('/favicon.svg')} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href={fontLink} rel="stylesheet" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(allLd)} />
+    <Tracking />
+  </head>
+  <body class:list={[{ 'page-overlay-header': headerOverlay }, bodyClass]}>
+    <a class="sr-only" href="#conteudo">Ir para o conteudo</a>
+    <Header overlay={headerOverlay} />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+  </body>
+</html>
+
+<style is:global>
+  main {
+    min-height: 60vh;
+  }
+</style>

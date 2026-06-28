@@ -1,0 +1,50 @@
+---
+import { site } from '../../config/site';
+
+const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`;
+---
+
+<section class="cta-band section reveal">
+  <div class="container cta-band__inner">
+    <div>
+      <span class="motion-line motion-line--wide" aria-hidden="true"></span>
+      <p class="eyebrow">Próximo passo</p>
+      <h2>{site.tagline}</h2>
+      <p>
+        Vamos conversar sobre o imóvel ideal ou sobre a melhor estratégia para o seu patrimônio.
+      </p>
+    </div>
+    <a class="btn btn-accent btn-motion" href={waUrl} target="_blank" rel="noopener noreferrer">
+      Falar no WhatsApp
+    </a>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    background: var(--color-primary);
+    color: var(--color-background);
+  }
+
+  .cta-band__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .cta-band .motion-line {
+    margin-bottom: var(--space-3);
+  }
+
+  .cta-band .eyebrow {
+    color: var(--color-accent);
+  }
+
+  .cta-band p:last-of-type {
+    max-width: 46ch;
+    color: color-mix(in srgb, var(--color-background) 82%, transparent);
+    margin-bottom: 0;
+  }
+</style>

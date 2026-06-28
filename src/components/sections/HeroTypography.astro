@@ -1,0 +1,54 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  subtitle,
+  ctaLabel = 'Fale conosco',
+  ctaHref = '#contato',
+} = Astro.props;
+---
+
+<section class="hero-type section">
+  <div class="container hero-type__inner reveal">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    {subtitle && <p class="lead">{subtitle}</p>}
+    {ctaHref && <a class="btn btn-primary" href={ctaHref}>{ctaLabel}</a>}
+  </div>
+</section>
+
+<style>
+  .hero-type {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 12%, var(--color-neutral-100)),
+      var(--color-neutral-100)
+    );
+  }
+
+  .hero-type__inner {
+    max-width: 720px;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--text-small);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .lead {
+    font-size: 1.25rem;
+    max-width: 48ch;
+    margin-bottom: var(--space-3);
+  }
+</style>

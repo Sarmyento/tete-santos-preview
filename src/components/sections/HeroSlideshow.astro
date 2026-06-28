@@ -1,0 +1,217 @@
+---
+import { site } from '../../config/site';
+import { assetPath, sitePath } from '../../lib/paths';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  eyebrow = site.taglineSecondary,
+  title = site.tagline,
+  subtitle = 'Consultoria imobiliária de alto luxo com estratégia, discrição e curadoria de patrimônio.',
+  ctaLabel = 'Agende sua visita',
+  ctaHref = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`,
+} = Astro.props;
+
+const slides = [
+  { src: assetPath('/images/hero/tete-H1-hero-formal.png'), alt: 'Tetê Santos em look formal no hero' },
+  { src: assetPath('/images/hero/tete-H2-hero-confiante.png'), alt: 'Tetê Santos em pose confiante no hero' },
+  { src: assetPath('/images/hero/tete-H3-hero-smart-casual.png'), alt: 'Tetê Santos em smart casual no hero' },
+  { src: assetPath('/images/hero/tete-H4-hero-crop.png'), alt: 'Tetê Santos em enquadramento editorial no hero' },
+];
+
+const mobileSlide = {
+  src: assetPath('/images/hero/tete-H5-mobile-vertical.png'),
+  alt: 'Tetê Santos em retrato vertical para mobile',
+};
+---
+
+<section class="hero" data-hero-slideshow aria-label="Apresentacao principal">
+  <div class="hero__slides" data-hero-slides>
+    {
+      slides.map((slide, index) => (
+        <div class:list={['hero__slide', `hero__slide--${index + 1}`, { 'hero__slide--active': index === 0 }]} data-hero-slide>
+          <picture>
+            <source media="(max-width: 767px)" srcset={mobileSlide.src} />
+            <img
+              src={slide.src}
+              alt={slide.alt}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              fetchpriority={index === 0 ? 'high' : 'auto'}
+            />
+          </picture>
+        </div>
+      ))
+    }
+  </div>
+  <div class="hero__overlay"></div>
+  <div class="container hero__content">
+    <p class="eyebrow hero__eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    <p class="hero__subtitle">{subtitle}</p>
+    <div class="hero__actions">
+      <a class="btn btn-accent btn-motion" href={ctaHref} target="_blank" rel="noopener noreferrer">
+        {ctaLabel}
+      </a>
+      <a class="btn btn-secondary btn-motion" href={`${sitePath('/imoveis')}#filtros`}>Busca avançada com filtros</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector('[data-hero-slideshow]');
+  const slideNodes = root ? [...root.querySelectorAll('[data-hero-slide]')] : [];
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (root && slideNodes.length > 1 && !reduced) {
+    let current = 0;
+    window.setInterval(() => {
+      slideNodes[current]?.classList.remove('hero__slide--active');
+      current = (current + 1) % slideNodes.length;
+      slideNodes[current]?.classList.add('hero__slide--active');
+    }, 6000);
+  }
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: min(92vh, 920px);
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    color: var(--color-background);
+    padding-top: var(--header-height);
+  }
+
+  .hero__slides {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--motion-hero-fade) var(--ease-hero);
+  }
+
+  .hero__slide--active {
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .hero__slide picture,
+  .hero__slide img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero__slide img {
+    object-fit: cover;
+    object-position: center 18%;
+    transform: scale(1);
+    transform-origin: center 20%;
+    animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
+  }
+
+  .hero__slide--1 img {
+    object-position: center 12%;
+    transform-origin: center 14%;
+  }
+
+  .hero__slide--2 img {
+    object-position: center 15%;
+    transform-origin: center 17%;
+  }
+
+  .hero__slide--3 img {
+    object-position: center 18%;
+    transform-origin: center 20%;
+  }
+
+  .hero__slide--4 img {
+    object-position: center 22%;
+    transform-origin: center 24%;
+  }
+
+  .hero__slide:not(.hero__slide--active) img {
+    animation: none;
+    transform: scale(1);
+  }
+
+  @keyframes heroKenBurns {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.03);
+    }
+  }
+
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(62 25 35 / 0.28) 0%, rgb(62 25 35 / 0.1) 32%, rgb(62 25 35 / 0.72) 100%),
+      linear-gradient(90deg, rgb(36 26 27 / 0.5) 0%, transparent 55%);
+    z-index: 2;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 3;
+    padding-block: var(--space-10) var(--space-12);
+    max-width: 760px;
+  }
+
+  .hero__eyebrow {
+    color: var(--color-accent);
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    margin-bottom: var(--space-3);
+    text-wrap: balance;
+  }
+
+  .hero__subtitle {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    max-width: 42ch;
+    color: color-mix(in srgb, var(--color-background) 88%, transparent);
+    margin-bottom: var(--space-4);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  @media (max-width: 767px) {
+    .hero__slide img {
+      object-position: center 10%;
+      transform-origin: center 12%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__slide {
+      transition: none;
+    }
+
+    .hero__slide:not(:first-child) {
+      display: none;
+    }
+
+    .hero__slide img {
+      animation: none;
+    }
+  }
+</style>

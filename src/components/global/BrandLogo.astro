@@ -1,0 +1,35 @@
+---
+interface Props {
+  variant?: 'dark' | 'light';
+  class?: string;
+}
+
+const { variant = 'light', class: className = '' } = Astro.props;
+const textMain = variant === 'dark' ? '#F2EBE0' : '#5A2730';
+const textSub = variant === 'dark' ? '#C2A26B' : '#9C7C4F';
+---
+
+<svg
+  class:list={['brand-logo', className]}
+  viewBox="0 0 470 180"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Tetê Santos Imóveis de Luxo"
+>
+  <polygon points="62,32 130,32 154,56 154,124 130,148 62,148 38,124 38,56" fill="none" stroke="#C2A26B" stroke-width="1.6"></polygon>
+  <polygon points="66,40 126,40 146,60 146,120 126,140 66,140 46,120 46,60" fill="none" stroke="#C2A26B" stroke-width="0.7"></polygon>
+  <text x="96" y="106" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="46" fill={textMain} letter-spacing="1">TS</text>
+  <line x1="184" y1="52" x2="184" y2="80" stroke="#C2A26B" stroke-width="0.8"></line>
+  <line x1="184" y1="100" x2="184" y2="128" stroke="#C2A26B" stroke-width="0.8"></line>
+  <path d="M184 84 l5 6 -5 6 -5 -6 Z" fill="#C2A26B"></path>
+  <text x="324" y="80" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="27" fill={textMain} letter-spacing="2">TET&#202; SANTOS</text>
+  <line x1="246" y1="100" x2="402" y2="100" stroke="#C2A26B" stroke-width="0.8"></line>
+  <text x="324" y="122" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="11" letter-spacing="3.5" fill={textSub}>IM&#211;VEIS DE LUXO</text>
+</svg>
+
+<style>
+  .brand-logo {
+    display: block;
+    width: auto;
+  }
+</style>

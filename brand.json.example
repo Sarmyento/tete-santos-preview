@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "client": "cliente-exemplo",
+  "generated_at": "2026-06-28",
+  "colors": {
+    "primary": "#0d9488",
+    "secondary": "#f59e0b",
+    "neutrals": ["#134e4a", "#f0fdfa", "#64748b"],
+    "semantic": { "success": "#15803d", "warning": "#ca8a04", "danger": "#b91c1c" }
+  },
+  "typography": {
+    "heading": { "family": "DM Sans", "weights": [600, 700] },
+    "body": { "family": "DM Sans", "weights": [400, 500] },
+    "scale": { "h1": "2.75rem", "h2": "2rem", "h3": "1.5rem", "body": "1rem", "small": "0.875rem" }
+  },
+  "spacing": { "base": 8 },
+  "logo": {
+    "usage": { "clear_space": "1x", "min_size": "32px", "on_dark": true, "on_light": true }
+  },
+  "voice": {
+    "adjectives": ["profissional", "acolhedor", "direto"],
+    "do": ["CTA claro", "beneficio antes de feature"],
+    "dont": ["jargao vazio", "tom robotico"]
+  },
+  "dos_donts": {
+    "visual": {
+      "do": ["contraste AA", "fotos reais"],
+      "dont": ["stock generico", "gradiente roxo de IA"]
+    }
+  }
+}

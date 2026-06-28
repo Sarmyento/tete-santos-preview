@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSlideshow from '../components/sections/HeroSlideshow.astro';
+import ListingsGrid from '../components/sections/ListingsGrid.astro';
+import AboutTeaser from '../components/sections/AboutTeaser.astro';
+import ServicesGrid from '../components/sections/ServicesGrid.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import RevealInit from '../components/sections/RevealInit.astro';
+import { site } from '../config/site';
+import { getListings } from '../lib/listings';
+
+const featured = getListings({ featuredOnly: true, limit: 6 });
+---
+
+<BaseLayout headerOverlay={true}>
+  <HeroSlideshow />
+  <ListingsGrid listings={featured} />
+  <AboutTeaser />
+  <ServicesGrid />
+  <CtaBand />
+  <RevealInit />
+</BaseLayout>

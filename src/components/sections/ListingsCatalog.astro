@@ -1,0 +1,325 @@
+---
+import ListingCard from '../listings/ListingCard.astro';
+import type { Listing } from '../../lib/listings';
+import { getListingFilterOptions } from '../../lib/listings-filters';
+
+interface Props {
+  listings: Listing[];
+}
+
+const { listings } = Astro.props;
+const { cities, neighborhoods, types } = getListingFilterOptions(listings);
+---
+
+<section class="section section--tight" id="filtros" aria-labelledby="filtros-title">
+  <div class="container">
+    <div class="filters-panel reveal">
+      <div class="filters-panel__head">
+        <div>
+          <p class="eyebrow">Busca avançada</p>
+          <h2 id="filtros-title">Encontre o imóvel ideal</h2>
+          <p class="filters-panel__lead">
+            Refine por localização, tipo, quartos, área e faixa de preço. Resultados atualizados na hora.
+          </p>
+        </div>
+        <p class="filters-panel__count" data-results-count aria-live="polite">
+          {listings.length} imóveis encontrados
+        </p>
+      </div>
+
+      <form class="filters-form" data-listings-filter aria-label="Filtros de busca avançada">
+        <label class="filters-form__wide">
+          <span>Palavra-chave</span>
+          <input type="search" name="q" placeholder="Bairro, título ou referência" autocomplete="off" />
+        </label>
+
+        <label>
+          <span>Cidade</span>
+          <select name="city">
+            <option value="">Todas</option>
+            {cities.map((city) => <option value={city}>{city}</option>)}
+          </select>
+        </label>
+
+        <label>
+          <span>Bairro</span>
+          <select name="neighborhood">
+            <option value="">Todos</option>
+            {neighborhoods.map((neighborhood) => <option value={neighborhood}>{neighborhood}</option>)}
+          </select>
+        </label>
+
+        <label>
+          <span>Tipo</span>
+          <select name="type">
+            <option value="">Todos</option>
+            {types.map((type) => <option value={type}>{type}</option>)}
+          </select>
+        </label>
+
+        <label>
+          <span>Quartos (mín.)</span>
+          <select name="bedrooms">
+            <option value="">Qualquer</option>
+            <option value="1">1+</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+            <option value="4">4+</option>
+            <option value="5">5+</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Preço mínimo</span>
+          <select name="priceMin">
+            <option value="">Sem mínimo</option>
+            <option value="1000000">R$ 1.000.000</option>
+            <option value="1500000">R$ 1.500.000</option>
+            <option value="2000000">R$ 2.000.000</option>
+            <option value="2500000">R$ 2.500.000</option>
+            <option value="3000000">R$ 3.000.000</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Preço máximo</span>
+          <select name="priceMax">
+            <option value="">Sem máximo</option>
+            <option value="1500000">R$ 1.500.000</option>
+            <option value="2000000">R$ 2.000.000</option>
+            <option value="2500000">R$ 2.500.000</option>
+            <option value="3000000">R$ 3.000.000</option>
+            <option value="3500000">R$ 3.500.000</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Área mínima (m²)</span>
+          <select name="areaMin">
+            <option value="">Qualquer</option>
+            <option value="100">100 m²</option>
+            <option value="150">150 m²</option>
+            <option value="200">200 m²</option>
+            <option value="300">300 m²</option>
+            <option value="400">400 m²</option>
+          </select>
+        </label>
+
+        <div class="filters-form__actions">
+          <button class="btn btn-primary btn-motion" type="submit">Aplicar filtros</button>
+          <button class="btn btn-secondary btn-motion filters-form__reset" type="reset">Limpar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="listings-grid reveal-stagger" data-listings-grid>
+      {
+        listings.map((listing) => (
+          <div
+            class="listings-grid__item"
+            data-listing-item
+            data-title={listing.title.toLowerCase()}
+            data-neighborhood={listing.neighborhood}
+            data-city={listing.city}
+            data-type={listing.type}
+            data-bedrooms={listing.bedrooms}
+            data-price={listing.priceValue}
+            data-area={listing.area}
+          >
+            <ListingCard listing={listing} />
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="listings-empty" data-listings-empty hidden>
+      Nenhum imóvel corresponde aos filtros selecionados. Ajuste a busca ou fale com Tetê para curadoria personalizada.
+    </p>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector('[data-listings-filter]');
+  const items = [...document.querySelectorAll('[data-listing-item]')];
+  const countEl = document.querySelector('[data-results-count]');
+  const emptyEl = document.querySelector('[data-listings-empty]');
+  const gridEl = document.querySelector('[data-listings-grid]');
+
+  function applyFilters() {
+    if (!form) return;
+
+    const data = new FormData(form);
+    const q = String(data.get('q') ?? '')
+      .trim()
+      .toLowerCase();
+    const city = String(data.get('city') ?? '');
+    const neighborhood = String(data.get('neighborhood') ?? '');
+    const type = String(data.get('type') ?? '');
+    const bedrooms = Number(data.get('bedrooms') || 0);
+    const priceMin = Number(data.get('priceMin') || 0);
+    const priceMax = Number(data.get('priceMax') || 0);
+    const areaMin = Number(data.get('areaMin') || 0);
+
+    let visible = 0;
+
+    for (const item of items) {
+      const title = item.getAttribute('data-title') ?? '';
+      const itemCity = item.getAttribute('data-city') ?? '';
+      const itemNeighborhood = item.getAttribute('data-neighborhood') ?? '';
+      const itemType = item.getAttribute('data-type') ?? '';
+      const itemBedrooms = Number(item.getAttribute('data-bedrooms') ?? 0);
+      const itemPrice = Number(item.getAttribute('data-price') ?? 0);
+      const itemArea = Number(item.getAttribute('data-area') ?? 0);
+
+      const matchesQuery =
+        !q || title.includes(q) || itemNeighborhood.toLowerCase().includes(q) || itemCity.toLowerCase().includes(q);
+      const matchesCity = !city || itemCity === city;
+      const matchesNeighborhood = !neighborhood || itemNeighborhood === neighborhood;
+      const matchesType = !type || itemType === type;
+      const matchesBedrooms = !bedrooms || itemBedrooms >= bedrooms;
+      const matchesPriceMin = !priceMin || itemPrice >= priceMin;
+      const matchesPriceMax = !priceMax || itemPrice <= priceMax;
+      const matchesArea = !areaMin || itemArea >= areaMin;
+
+      const show =
+        matchesQuery &&
+        matchesCity &&
+        matchesNeighborhood &&
+        matchesType &&
+        matchesBedrooms &&
+        matchesPriceMin &&
+        matchesPriceMax &&
+        matchesArea;
+
+      item.toggleAttribute('hidden', !show);
+      if (show) visible += 1;
+    }
+
+    if (countEl) {
+      countEl.textContent = `${visible} imóvel${visible === 1 ? '' : 'es'} encontrado${visible === 1 ? '' : 's'}`;
+    }
+
+    emptyEl?.toggleAttribute('hidden', visible > 0);
+    gridEl?.toggleAttribute('hidden', visible === 0);
+  }
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    applyFilters();
+  });
+
+  form?.addEventListener('reset', () => {
+    window.setTimeout(applyFilters, 0);
+  });
+
+  form?.querySelectorAll('select, input').forEach((field) => {
+    field.addEventListener('change', applyFilters);
+  });
+
+  if (window.location.hash === '#filtros') {
+    document.getElementById('filtros')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+
+<style>
+  .filters-panel {
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+    background: var(--color-white);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .filters-panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .filters-panel__lead {
+    max-width: 58ch;
+    color: var(--color-muted);
+    margin-bottom: 0;
+  }
+
+  .filters-panel__count {
+    align-self: end;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .filters-form {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 900px) {
+    .filters-form {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .filters-form__wide {
+    grid-column: 1 / -1;
+  }
+
+  .filters-form label {
+    display: grid;
+    gap: var(--space-1);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .filters-form input,
+  .filters-form select {
+    font: inherit;
+    padding: var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-background);
+  }
+
+  .filters-form__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .filters-form__reset {
+    color: var(--color-ink);
+    border-color: var(--color-line);
+    background: transparent;
+  }
+
+  .listings-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .listings-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .listings-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .listings-empty {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--color-muted);
+    border: 1px dashed var(--color-line);
+    background: var(--color-white);
+  }
+</style>

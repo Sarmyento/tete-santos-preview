@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ListingDetail from '../../components/listings/ListingDetail.astro';
+import CtaBand from '../../components/sections/CtaBand.astro';
+import DetailRevealInit from '../../components/sections/DetailRevealInit.astro';
+import { getListingBySlug, getListingSlugs } from '../../lib/listings';
+
+export function getStaticPaths() {
+  return getListingSlugs().map((slug) => ({
+    params: { slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const listing = getListingBySlug(slug ?? '');
+
+if (!listing) {
+  return Astro.redirect('/imoveis');
+}
+---
+
+<BaseLayout
+  title={`${listing.title} | Imóveis`}
+  description={`${listing.title} em ${listing.neighborhood}, ${listing.city}. ${listing.price}. Consultoria Tetê Santos.`}
+  image={listing.image}
+  bodyClass="page-listing-detail"
+>
+  <ListingDetail listing={listing} />
+  <CtaBand />
+  <DetailRevealInit />
+</BaseLayout>
