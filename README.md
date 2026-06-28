@@ -37,9 +37,11 @@ PUBLIC_DEPLOY_TARGET=github-pages npm run build
 
 ## Deploy
 
-Push na branch `main` dispara `.github/workflows/deploy-pages.yml` (GitHub Pages).
+Push na branch `main` publica o build na branch `gh-pages`.
 
-## Stack
+**Ativar preview (uma vez):** GitHub → repo → Settings → Pages → Source: **Deploy from a branch** → branch `gh-pages` / `/ (root)`.
+
+URL final: https://sarmyento.github.io/tete-santos-preview/
 
 - Astro 7 · output estático
 - Motion LCW · identidade Heritage Real
