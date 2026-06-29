@@ -47,38 +47,6 @@ const specs = [
       </div>
     </div>
 
-    <aside class="listing-detail__sidebar reveal-right">
-      <div class="listing-detail__lead-panel">
-        <span class="motion-line motion-line--wide" aria-hidden="true"></span>
-        <p class="listing-detail__lead-price">{listing.price}</p>
-        <p class="listing-detail__lead-note">Deixe uma mensagem e retornaremos o contato</p>
-
-        <form class="listing-detail__form" id="listing-lead-form" novalidate>
-          <div class="listing-detail__field">
-            <label for="lead-nome">Nome</label>
-            <input id="lead-nome" type="text" name="nome" required autocomplete="name" />
-          </div>
-          <div class="listing-detail__field">
-            <label for="lead-email">E-mail</label>
-            <input id="lead-email" type="email" name="email" required autocomplete="email" />
-          </div>
-          <div class="listing-detail__field">
-            <label for="lead-telefone">Telefone</label>
-            <input id="lead-telefone" type="tel" name="telefone" autocomplete="tel" />
-          </div>
-          <div class="listing-detail__field">
-            <label for="lead-msg">Mensagem</label>
-            <textarea id="lead-msg" name="msg" rows="5" required>{defaultMessage}</textarea>
-          </div>
-          <button class="btn btn-accent btn-motion listing-detail__submit" type="submit">
-            Enviar mensagem
-          </button>
-        </form>
-
-        <p class="listing-detail__privacy">Ao informar seus dados, você concorda com a política de privacidade.</p>
-      </div>
-    </aside>
-
     <div class="listing-detail__body">
       <div class="listing-detail__gallery-shell reveal-scale" data-listing-gallery>
         <figure class="listing-detail__featured">
@@ -211,6 +179,38 @@ const specs = [
         </div>
       </section>
     </div>
+
+    <aside class="listing-detail__sidebar reveal-right">
+      <div class="listing-detail__lead-panel">
+        <span class="motion-line motion-line--wide" aria-hidden="true"></span>
+        <p class="listing-detail__lead-price">{listing.price}</p>
+        <p class="listing-detail__lead-note">Deixe uma mensagem e retornaremos o contato</p>
+
+        <form class="listing-detail__form" id="listing-lead-form" novalidate>
+          <div class="listing-detail__field">
+            <label for="lead-nome">Nome</label>
+            <input id="lead-nome" type="text" name="nome" required autocomplete="name" />
+          </div>
+          <div class="listing-detail__field">
+            <label for="lead-email">E-mail</label>
+            <input id="lead-email" type="email" name="email" required autocomplete="email" />
+          </div>
+          <div class="listing-detail__field">
+            <label for="lead-telefone">Telefone</label>
+            <input id="lead-telefone" type="tel" name="telefone" autocomplete="tel" />
+          </div>
+          <div class="listing-detail__field">
+            <label for="lead-msg">Mensagem</label>
+            <textarea id="lead-msg" name="msg" rows="5" required>{defaultMessage}</textarea>
+          </div>
+          <button class="btn btn-accent btn-motion listing-detail__submit" type="submit">
+            Enviar mensagem
+          </button>
+        </form>
+
+        <p class="listing-detail__privacy">Ao informar seus dados, você concorda com a política de privacidade.</p>
+      </div>
+    </aside>
   </div>
 </article>
 
@@ -290,20 +290,6 @@ const specs = [
     align-items: start;
   }
 
-  @media (max-width: 1023px) {
-    .listing-detail__intro {
-      order: 1;
-    }
-
-    .listing-detail__body {
-      order: 2;
-    }
-
-    .listing-detail__sidebar {
-      order: 3;
-    }
-  }
-
   @media (min-width: 1024px) {
     .listing-detail__shell {
       grid-template-columns: minmax(0, 1fr) min(400px, 34%);
@@ -317,14 +303,14 @@ const specs = [
       grid-row: 1;
     }
 
-    .listing-detail__sidebar {
-      grid-column: 2;
-      grid-row: 1 / span 2;
-    }
-
     .listing-detail__body {
       grid-column: 1;
       grid-row: 2;
+    }
+
+    .listing-detail__sidebar {
+      grid-column: 2;
+      grid-row: 1 / span 2;
     }
   }
 
