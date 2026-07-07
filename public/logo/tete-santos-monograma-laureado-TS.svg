@@ -1,0 +1,17 @@
+<svg viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg" aria-label="Monograma laureado TS — Tetê Santos">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Spectral:wght@500&amp;display=swap');</style>
+  <rect width="280" height="260" fill="#F2EBE0"/>
+  <rect x="24" y="24" width="232" height="212" fill="none" stroke="#C2A26B" stroke-width="0.8"/>
+  <g fill="none" stroke="#9C7C4F" stroke-width="1.2" stroke-linecap="round">
+    <path d="M58 168 C48 148 46 122 52 98 C58 74 68 58 78 48"/>
+    <path d="M58 168 C68 152 72 132 70 112 C68 92 62 72 54 58"/>
+    <path d="M52 98 C62 92 72 88 78 84"/>
+    <path d="M222 168 C232 148 234 122 228 98 C222 74 212 58 202 48"/>
+    <path d="M222 168 C212 152 208 132 210 112 C212 92 218 72 226 58"/>
+    <path d="M228 98 C218 92 208 88 202 84"/>
+  </g>
+  <text x="140" y="138" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="78" fill="#5A2730" letter-spacing="2">TS</text>
+  <line x1="88" y1="188" x2="192" y2="188" stroke="#C2A26B" stroke-width="0.8"/>
+  <text x="140" y="212" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="17" fill="#5A2730" letter-spacing="3.2">TETÊ SANTOS</text>
+  <text x="140" y="232" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="9" letter-spacing="2.8" fill="#9C7C4F">IMÓVEIS DE LUXO</text>
+</svg>
