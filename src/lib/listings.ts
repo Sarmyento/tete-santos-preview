@@ -24,7 +24,7 @@ export interface Listing {
 }
 
 function readXml(): string {
-  const path = resolve(process.cwd(), 'public/data/listings-mock.xml');
+  const path = resolve(process.cwd(), 'public/data/listings.xml');
   return readFileSync(path, 'utf8');
 }
 
