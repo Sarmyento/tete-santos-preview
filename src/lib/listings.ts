@@ -29,7 +29,8 @@ function readXml(): string {
 }
 
 function getTag(block: string, tag: string): string {
-  return block.match(new RegExp(`<${tag}>([^<]*)</${tag}>`))?.[1]?.trim() ?? '';
+  // [\s\S]*? — CRM pode emitir description/features com quebras de linha
+  return block.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1]?.trim() ?? '';
 }
 
 function parseListings(xml: string): Listing[] {

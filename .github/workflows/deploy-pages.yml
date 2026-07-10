@@ -23,18 +23,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fetch listings feed
-        env:
-          LISTINGS_FEED_URL: ${{ secrets.LISTINGS_FEED_URL }}
-        run: |
-          if [ -n "$LISTINGS_FEED_URL" ]; then
-            curl -sSf "$LISTINGS_FEED_URL" -o public/data/listings.xml || \
-              echo "::warning::Feed CRM indisponivel, usando mock"
-          fi
-          if [ ! -f public/data/listings.xml ]; then
-            cp public/data/listings-mock.xml public/data/listings.xml
-          fi
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -44,7 +32,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # LISTINGS_FEED_URL no Build: o prebuild (fetch-listings.mjs) sobrescreve
+      # listings.xml — sem o secret aqui o mock vencia o curl do passo antigo.
       - name: Build site
+        env:
+          LISTINGS_FEED_URL: ${{ secrets.LISTINGS_FEED_URL }}
         run: npm run build
 
       - name: Deploy to gh-pages branch

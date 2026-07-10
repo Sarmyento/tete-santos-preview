@@ -46,8 +46,9 @@ URL final: https://sarmyento.github.io/tete-santos-preview/
 - Astro 7 · output estático
 - Motion LCW · identidade Heritage Real
 - Hero/about: kit avatar seed **42002**
-- Listings: `public/data/listings-mock.xml` (CRM real na fase P4)
+- Listings: feed CRM via `LISTINGS_FEED_URL` (secret Actions / `.env`); fallback `public/data/listings-mock.xml`
 
 ## Pendente pós-aprovação Tetê
 
-- Lighthouse QA · domínio · feed CRM · forms Supabase · termo LGPD
+- Lighthouse QA · forms Supabase · termo LGPD
+- Home “destaque” só lista imóveis com `featured=true` no CRM (`destaque`)
