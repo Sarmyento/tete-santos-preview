@@ -30,7 +30,7 @@ const specs = [
       <header class="listing-detail__head reveal-left">
         <span class="motion-line motion-line--wide" aria-hidden="true"></span>
         <p class="listing-detail__code">{listing.type} · Cód. {listing.id}</p>
-        <h1>{listing.title}</h1>
+        <h1 class="listing-detail__title">{listing.title}</h1>
       </header>
 
       <p class="listing-detail__address reveal-left">{addressLine}</p>
@@ -151,12 +151,12 @@ const specs = [
       </section>
 
       {
-        listing.features.length > 0 && (
+        listing.amenities.length > 0 && (
           <section class="listing-detail__block reveal-up">
             <span class="motion-line motion-line--wide" aria-hidden="true"></span>
             <h2>Comodidades</h2>
             <ul class="listing-detail__amenities reveal-stagger">
-              {listing.features.map((feature) => <li>{feature}</li>)}
+              {listing.amenities.map((amenity) => <li>{amenity}</li>)}
             </ul>
           </section>
         )
@@ -343,8 +343,10 @@ const specs = [
     margin: 0 0 var(--space-2);
   }
 
-  .listing-detail__head h1 {
+  /* Título do imóvel: H1 global −4pt (só nesta página) */
+  .listing-detail__title {
     margin-bottom: 0;
+    font-size: clamp(calc(48px - 4pt), calc(9vw - 4pt), calc(104px - 4pt));
   }
 
   .listing-detail__address {

@@ -21,6 +21,7 @@ export interface Listing {
   featured: boolean;
   description: string;
   features: string[];
+  amenities: string[];
 }
 
 function readXml(): string {
@@ -46,6 +47,7 @@ function parseListings(xml: string): Listing[] {
         : [image, ...galleryItems.filter((item) => item !== image)]
       : [image];
     const featuresRaw = getTag(block, 'features');
+    const amenitiesRaw = getTag(block, 'amenities');
 
     return {
       id,
@@ -67,6 +69,7 @@ function parseListings(xml: string): Listing[] {
       featured: getTag(block, 'featured') === 'true',
       description: getTag(block, 'description'),
       features: featuresRaw ? featuresRaw.split('|').map((item) => item.trim()).filter(Boolean) : [],
+      amenities: amenitiesRaw ? amenitiesRaw.split('|').map((item) => item.trim()).filter(Boolean) : [],
     };
   });
 }
