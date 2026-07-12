@@ -1,0 +1,9 @@
+name = "tete-santos-robots-txt"
+main = "src/index.js"
+compatibility_date = "2026-07-12"
+account_id = "e2daea6fb719bc17dc0459ebb443edd9"
+workers_dev = false
+
+[[routes]]
+pattern = "tetesantos.com.br/robots.txt"
+zone_name = "tetesantos.com.br"
