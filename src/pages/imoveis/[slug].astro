@@ -4,6 +4,8 @@ import ListingDetail from '../../components/listings/ListingDetail.astro';
 import CtaBand from '../../components/sections/CtaBand.astro';
 import DetailRevealInit from '../../components/sections/DetailRevealInit.astro';
 import { getListingBySlug, getListingSlugs } from '../../lib/listings';
+import { breadcrumbJsonLd, listingProductJsonLd } from '../../lib/seo';
+import { site } from '../../config/site';
 
 export function getStaticPaths() {
   return getListingSlugs().map((slug) => ({
@@ -17,12 +19,24 @@ const listing = getListingBySlug(slug ?? '');
 if (!listing) {
   return Astro.redirect('/imoveis');
 }
+
+const origin = Astro.site ?? new URL(site.domain);
+const pageUrl = new URL(`/imoveis/${listing.slug}`, origin).href;
+const jsonLd = [
+  listingProductJsonLd(listing, pageUrl, origin.href),
+  breadcrumbJsonLd([
+    { name: 'Início', url: new URL('/', origin).href },
+    { name: 'Imóveis', url: new URL('/imoveis', origin).href },
+    { name: listing.title, url: pageUrl },
+  ]),
+];
 ---
 
 <BaseLayout
   title={`${listing.title} | Imóveis`}
   description={`${listing.title} em ${listing.neighborhood}, ${listing.city}. ${listing.price}. Consultoria Tetê Santos.`}
   image={listing.image}
+  jsonLd={jsonLd}
   bodyClass="page-listing-detail"
 >
   <ListingDetail listing={listing} />

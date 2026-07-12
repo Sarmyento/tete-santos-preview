@@ -6,7 +6,8 @@
   "description": "Site Tetê Santos · Heritage Real · P4 scaffold",
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/fetch-listings.mjs",
+    "optimize:static": "node scripts/optimize-static-images.mjs",
+    "prebuild": "node scripts/optimize-static-images.mjs && node scripts/fetch-listings.mjs && node scripts/optimize-listing-images.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "apply-brand": "node scripts/apply-brand.mjs",

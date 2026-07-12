@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://exemplo.com.br/sitemap-index.xml
+Sitemap: https://tetesantos.com.br/sitemap-index.xml

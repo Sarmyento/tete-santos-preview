@@ -20,6 +20,8 @@ const fallbackImage = assetPath('/images/listings/fallback-property.svg');
         loading="lazy"
         width="800"
         height="600"
+        sizes="(min-width: 900px) 360px, 90vw"
+        decoding="async"
         onerror={`this.onerror=null;this.src='${fallbackImage}';`}
       />
       <span class="listing-card__type">{listing.type}</span>

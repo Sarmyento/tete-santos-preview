@@ -19,15 +19,27 @@ const {
 } = Astro.props;
 
 const slides = [
-  { src: assetPath('/images/hero/tete-H1-hero-formal.png'), alt: 'Tetê Santos em look formal no hero' },
-  { src: assetPath('/images/hero/tete-H2-hero-confiante.png'), alt: 'Tetê Santos em pose confiante no hero' },
-  { src: assetPath('/images/hero/tete-H3-hero-smart-casual.png'), alt: 'Tetê Santos em smart casual no hero' },
-  { src: assetPath('/images/hero/tete-H4-hero-crop.png'), alt: 'Tetê Santos em enquadramento editorial no hero' },
-];
+  { base: '/images/hero/tete-H1-hero-formal', alt: 'Tetê Santos em look formal no hero' },
+  { base: '/images/hero/tete-H2-hero-confiante', alt: 'Tetê Santos em pose confiante no hero' },
+  { base: '/images/hero/tete-H3-hero-smart-casual', alt: 'Tetê Santos em smart casual no hero' },
+  { base: '/images/hero/tete-H4-hero-crop', alt: 'Tetê Santos em enquadramento editorial no hero' },
+].map((slide) => ({
+  ...slide,
+  png: assetPath(`${slide.base}.png`),
+  webp: assetPath(`${slide.base}.webp`),
+  webp1280: assetPath(`${slide.base}-1280.webp`),
+  avif: assetPath(`${slide.base}.avif`),
+  avif1280: assetPath(`${slide.base}-1280.avif`),
+}));
 
 const mobileSlide = {
-  src: assetPath('/images/hero/tete-H5-mobile-vertical.png'),
+  base: '/images/hero/tete-H5-mobile-vertical',
   alt: 'Tetê Santos em retrato vertical para mobile',
+  png: assetPath('/images/hero/tete-H5-mobile-vertical.png'),
+  webp: assetPath('/images/hero/tete-H5-mobile-vertical.webp'),
+  webp768: assetPath('/images/hero/tete-H5-mobile-vertical-768.webp'),
+  avif: assetPath('/images/hero/tete-H5-mobile-vertical.avif'),
+  avif768: assetPath('/images/hero/tete-H5-mobile-vertical-768.avif'),
 };
 ---
 
@@ -37,12 +49,37 @@ const mobileSlide = {
       slides.map((slide, index) => (
         <div class:list={['hero__slide', `hero__slide--${index + 1}`, { 'hero__slide--active': index === 0 }]} data-hero-slide>
           <picture>
-            <source media="(max-width: 767px)" srcset={mobileSlide.src} />
+            <source
+              media="(max-width: 767px)"
+              type="image/avif"
+              srcset={`${mobileSlide.avif768} 768w, ${mobileSlide.avif} 1080w`}
+              sizes="100vw"
+            />
+            <source
+              media="(max-width: 767px)"
+              type="image/webp"
+              srcset={`${mobileSlide.webp768} 768w, ${mobileSlide.webp} 1080w`}
+              sizes="100vw"
+            />
+            <source media="(max-width: 767px)" srcset={mobileSlide.png} />
+            <source
+              type="image/avif"
+              srcset={`${slide.avif1280} 1280w, ${slide.avif} 1920w`}
+              sizes="100vw"
+            />
+            <source
+              type="image/webp"
+              srcset={`${slide.webp1280} 1280w, ${slide.webp} 1920w`}
+              sizes="100vw"
+            />
             <img
-              src={slide.src}
+              src={slide.webp}
               alt={slide.alt}
+              width="1920"
+              height="1080"
               loading={index === 0 ? 'eager' : 'lazy'}
               fetchpriority={index === 0 ? 'high' : 'auto'}
+              decoding={index === 0 ? 'sync' : 'async'}
             />
           </picture>
         </div>

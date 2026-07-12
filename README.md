@@ -14,7 +14,7 @@ Rotas sugeridas para revisão:
 - `/tete-santos-preview/sobre`
 - `/tete-santos-preview/contato`
 
-> Ambiente de preview: `noindex` ativo · imóveis/endereços mock · domínio final `tetesantos.com.br` pendente.
+> Produção: `https://tetesantos.com.br` · indexável (sem noindex) · feed CRM no build · imagens WebP/AVIF.
 
 ## Repo local
 
