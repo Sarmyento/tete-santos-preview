@@ -19,6 +19,9 @@
     "@fontsource/spectral": "^5.2.8",
     "astro": "^7.0.0"
   },
+  "devDependencies": {
+    "sharp": "^0.34.2"
+  },
   "engines": {
     "node": ">=22.12.0"
   }

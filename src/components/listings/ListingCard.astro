@@ -10,25 +10,53 @@ const { listing } = Astro.props;
 const detailUrl = sitePath(`/imoveis/${listing.slug}`);
 const fallbackImage = assetPath('/images/listings/fallback-property.svg');
 const imageSrc = listing.image;
-const imageSrcSm = imageSrc.includes('-card.webp')
-  ? imageSrc.replace('-card.webp', '-card-sm.webp')
-  : imageSrc;
+const isOptimizedCard = imageSrc.includes('-card.webp');
+const imageSrcSm = isOptimizedCard ? imageSrc.replace('-card.webp', '-card-sm.webp') : imageSrc;
+const imageAvif = isOptimizedCard ? imageSrc.replace('-card.webp', '-card.avif') : '';
+const imageAvifSm = isOptimizedCard ? imageSrc.replace('-card.webp', '-card-sm.avif') : '';
 ---
 
 <article class="listing-card card-hover">
   <a class="listing-card__link" href={detailUrl}>
     <div class="listing-card__media card-hover__media">
-      <img
-        src={imageSrc}
-        srcset={`${imageSrcSm} 400w, ${imageSrc} 800w`}
-        alt={listing.title}
-        loading="lazy"
-        width="800"
-        height="600"
-        sizes="(min-width: 900px) 360px, 90vw"
-        decoding="async"
-        onerror={`this.onerror=null;this.src='${fallbackImage}';`}
-      />
+      {
+        isOptimizedCard ? (
+          <picture>
+            <source
+              type="image/avif"
+              srcset={`${imageAvifSm} 400w, ${imageAvif} 800w`}
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+            />
+            <source
+              type="image/webp"
+              srcset={`${imageSrcSm} 400w, ${imageSrc} 800w`}
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+            />
+            <img
+              src={imageSrcSm}
+              alt={listing.title}
+              loading="lazy"
+              fetchpriority="low"
+              width="400"
+              height="300"
+              sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+              decoding="async"
+              onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+            />
+          </picture>
+        ) : (
+          <img
+            src={imageSrc}
+            alt={listing.title}
+            loading="lazy"
+            fetchpriority="low"
+            width="800"
+            height="600"
+            decoding="async"
+            onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+          />
+        )
+      }
       <span class="listing-card__type">{listing.type}</span>
     </div>
     <div class="listing-card__body">
@@ -65,9 +93,14 @@ const imageSrcSm = imageSrc.includes('-card.webp')
     background: var(--color-line);
   }
 
-  .listing-card__media img {
+  .listing-card__media img,
+  .listing-card__media picture {
     width: 100%;
     height: 100%;
+    display: block;
+  }
+
+  .listing-card__media img {
     object-fit: cover;
   }
 

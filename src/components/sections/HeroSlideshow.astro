@@ -25,7 +25,6 @@ const slides = [
   { base: '/images/hero/tete-H4-hero-crop', alt: 'Tetê Santos em enquadramento editorial no hero' },
 ].map((slide) => ({
   ...slide,
-  png: assetPath(`${slide.base}.png`),
   webp: assetPath(`${slide.base}.webp`),
   webp1280: assetPath(`${slide.base}-1280.webp`),
   avif: assetPath(`${slide.base}.avif`),
@@ -33,59 +32,60 @@ const slides = [
 }));
 
 const mobileSlide = {
-  base: '/images/hero/tete-H5-mobile-vertical',
   alt: 'Tetê Santos em retrato vertical para mobile',
-  png: assetPath('/images/hero/tete-H5-mobile-vertical.png'),
   webp: assetPath('/images/hero/tete-H5-mobile-vertical.webp'),
   webp768: assetPath('/images/hero/tete-H5-mobile-vertical-768.webp'),
   avif: assetPath('/images/hero/tete-H5-mobile-vertical.avif'),
   avif768: assetPath('/images/hero/tete-H5-mobile-vertical-768.avif'),
 };
+
+const first = slides[0];
+const deferredSlides = slides.slice(1);
 ---
 
 <section class="hero" data-hero-slideshow aria-label="Apresentacao principal">
   <div class="hero__slides" data-hero-slides>
-    {
-      slides.map((slide, index) => (
-        <div class:list={['hero__slide', `hero__slide--${index + 1}`, { 'hero__slide--active': index === 0 }]} data-hero-slide>
-          <picture>
-            <source
-              media="(max-width: 767px)"
-              type="image/avif"
-              srcset={`${mobileSlide.avif768} 768w, ${mobileSlide.avif} 1080w`}
-              sizes="100vw"
-            />
-            <source
-              media="(max-width: 767px)"
-              type="image/webp"
-              srcset={`${mobileSlide.webp768} 768w, ${mobileSlide.webp} 1080w`}
-              sizes="100vw"
-            />
-            <source media="(max-width: 767px)" srcset={mobileSlide.png} />
-            <source
-              type="image/avif"
-              srcset={`${slide.avif1280} 1280w, ${slide.avif} 1920w`}
-              sizes="100vw"
-            />
-            <source
-              type="image/webp"
-              srcset={`${slide.webp1280} 1280w, ${slide.webp} 1920w`}
-              sizes="100vw"
-            />
-            <img
-              src={slide.webp}
-              alt={slide.alt}
-              width="1920"
-              height="1080"
-              loading={index === 0 ? 'eager' : 'lazy'}
-              fetchpriority={index === 0 ? 'high' : 'auto'}
-              decoding="async"
-            />
-          </picture>
-        </div>
-      ))
-    }
+    <div class="hero__slide hero__slide--1 hero__slide--active" data-hero-slide>
+      <picture>
+        <source
+          media="(max-width: 767px)"
+          type="image/avif"
+          srcset={`${mobileSlide.avif768} 768w, ${mobileSlide.avif} 1080w`}
+          sizes="100vw"
+        />
+        <source
+          media="(max-width: 767px)"
+          type="image/webp"
+          srcset={`${mobileSlide.webp768} 768w, ${mobileSlide.webp} 1080w`}
+          sizes="100vw"
+        />
+        <source
+          type="image/avif"
+          srcset={`${first.avif1280} 1280w, ${first.avif} 1920w`}
+          sizes="100vw"
+        />
+        <source
+          type="image/webp"
+          srcset={`${first.webp1280} 1280w, ${first.webp} 1920w`}
+          sizes="100vw"
+        />
+        <img
+          src={first.webp}
+          alt={first.alt}
+          width="1920"
+          height="1080"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </picture>
+    </div>
   </div>
+  <script
+    type="application/json"
+    data-hero-deferred
+    set:html={JSON.stringify({ mobile: mobileSlide, slides: deferredSlides })}
+  />
   <div class="hero__overlay"></div>
   <div class="container hero__content">
     <p class="eyebrow hero__eyebrow">{eyebrow}</p>
@@ -102,16 +102,76 @@ const mobileSlide = {
 
 <script>
   const root = document.querySelector('[data-hero-slideshow]');
-  const slideNodes = root ? [...root.querySelectorAll('[data-hero-slide]')] : [];
+  const slidesRoot = root?.querySelector('[data-hero-slides]');
+  const deferredNode = root?.querySelector('[data-hero-deferred]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (root && slideNodes.length > 1 && !reduced) {
+  function buildSlide(slide, mobile, index) {
+    const el = document.createElement('div');
+    el.className = `hero__slide hero__slide--${index + 1}`;
+    el.setAttribute('data-hero-slide', '');
+    const picture = document.createElement('picture');
+    const sources = [
+      ['(max-width: 767px)', 'image/avif', `${mobile.avif768} 768w, ${mobile.avif} 1080w`],
+      ['(max-width: 767px)', 'image/webp', `${mobile.webp768} 768w, ${mobile.webp} 1080w`],
+      [null, 'image/avif', `${slide.avif1280} 1280w, ${slide.avif} 1920w`],
+      [null, 'image/webp', `${slide.webp1280} 1280w, ${slide.webp} 1920w`],
+    ];
+    for (const [media, type, srcset] of sources) {
+      const source = document.createElement('source');
+      if (media) source.media = media;
+      source.type = type;
+      source.srcset = srcset;
+      source.sizes = '100vw';
+      picture.appendChild(source);
+    }
+    const img = document.createElement('img');
+    img.src = slide.webp;
+    img.alt = slide.alt;
+    img.width = 1920;
+    img.height = 1080;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    picture.appendChild(img);
+    el.appendChild(picture);
+    return el;
+  }
+
+  function startRotation() {
+    const slideNodes = root ? [...root.querySelectorAll('[data-hero-slide]')] : [];
+    if (!root || slideNodes.length < 2 || reduced) return;
     let current = 0;
     window.setInterval(() => {
       slideNodes[current]?.classList.remove('hero__slide--active');
       current = (current + 1) % slideNodes.length;
       slideNodes[current]?.classList.add('hero__slide--active');
     }, 6000);
+  }
+
+  function injectDeferred() {
+    if (!slidesRoot || !deferredNode || reduced) return;
+    try {
+      const payload = JSON.parse(deferredNode.textContent || '{}');
+      const deferred = Array.isArray(payload.slides) ? payload.slides : [];
+      const mobile = payload.mobile;
+      if (!mobile || !deferred.length) return;
+      deferred.forEach((slide, i) => {
+        slidesRoot.appendChild(buildSlide(slide, mobile, i + 1));
+      });
+      deferredNode.remove();
+      startRotation();
+    } catch {
+      // slideshow fica só no primeiro slide
+    }
+  }
+
+  if (root && slidesRoot && deferredNode && !reduced) {
+    const run = () => injectDeferred();
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(run, { timeout: 2500 });
+    } else {
+      window.setTimeout(run, 1200);
+    }
   }
 </script>
 

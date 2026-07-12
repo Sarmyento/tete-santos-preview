@@ -1,5 +1,5 @@
 /**
- * Baixa fotos remotas do feed XML e grava WebP local (card + detail).
+ * Baixa fotos remotas do feed XML e grava WebP + AVIF local (card + detail).
  * Reescreve as URLs no listings.xml para apontar aos arquivos otimizados.
  *
  * Roda depois de fetch-listings.mjs no prebuild.
@@ -17,6 +17,7 @@ const CARD_WIDTH = 800;
 const CARD_SM_WIDTH = 400;
 const DETAIL_WIDTH = 1400;
 const WEBP_QUALITY = 72;
+const AVIF_QUALITY = 55;
 
 function hashUrl(url) {
   return createHash('sha1').update(url).digest('hex').slice(0, 12);
@@ -33,12 +34,28 @@ async function download(url) {
   return Buffer.from(await response.arrayBuffer());
 }
 
-async function writeVariant(buffer, outPath, width) {
-  await sharp(buffer)
-    .rotate()
-    .resize({ width, withoutEnlargement: true })
-    .webp({ quality: WEBP_QUALITY, effort: 4 })
-    .toFile(outPath);
+async function writeVariant(buffer, outPath, width, format) {
+  let img = sharp(buffer).rotate().resize({ width, withoutEnlargement: true });
+  if (format === 'avif') {
+    await img.avif({ quality: AVIF_QUALITY, effort: 4 }).toFile(outPath);
+  } else {
+    await img.webp({ quality: WEBP_QUALITY, effort: 4 }).toFile(outPath);
+  }
+}
+
+async function ensureFromCard(cardAbs, destAbs, width, format) {
+  try {
+    await stat(destAbs);
+    return;
+  } catch {
+    // generate
+  }
+  let img = sharp(cardAbs).resize({ width, withoutEnlargement: true });
+  if (format === 'avif') {
+    await img.avif({ quality: AVIF_QUALITY, effort: 4 }).toFile(destAbs);
+  } else {
+    await img.webp({ quality: WEBP_QUALITY, effort: 4 }).toFile(destAbs);
+  }
 }
 
 async function optimizeUrl(url, cache) {
@@ -51,15 +68,19 @@ async function optimizeUrl(url, cache) {
   const cardAbs = join(outDir, `${id}-card.webp`);
   const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
   const detailAbs = join(outDir, `${id}-detail.webp`);
+  const cardAvifAbs = join(outDir, `${id}-card.avif`);
+  const cardSmAvifAbs = join(outDir, `${id}-card-sm.avif`);
 
   try {
     const buffer = await download(url);
-    await writeVariant(buffer, cardAbs, CARD_WIDTH);
-    await writeVariant(buffer, cardSmAbs, CARD_SM_WIDTH);
-    await writeVariant(buffer, detailAbs, DETAIL_WIDTH);
+    await writeVariant(buffer, cardAbs, CARD_WIDTH, 'webp');
+    await writeVariant(buffer, cardSmAbs, CARD_SM_WIDTH, 'webp');
+    await writeVariant(buffer, detailAbs, DETAIL_WIDTH, 'webp');
+    await writeVariant(buffer, cardAvifAbs, CARD_WIDTH, 'avif');
+    await writeVariant(buffer, cardSmAvifAbs, CARD_SM_WIDTH, 'avif');
     const mapped = { card: cardRel, cardSm: cardSmRel, detail: detailRel };
     cache.set(url, mapped);
-    console.log(`[optimize-listings] ${id} ok (${(buffer.length / 1024).toFixed(0)} KB → webp)`);
+    console.log(`[optimize-listings] ${id} ok (${(buffer.length / 1024).toFixed(0)} KB → webp+avif)`);
     return mapped;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -67,6 +88,24 @@ async function optimizeUrl(url, cache) {
     const mapped = { card: url, cardSm: url, detail: url };
     cache.set(url, mapped);
     return mapped;
+  }
+}
+
+async function ensureLocalVariants(xml) {
+  const localCards = [...xml.matchAll(/\/images\/listings\/opt\/([a-f0-9]+)-card\.webp/gi)].map((m) => m[1]);
+  for (const id of [...new Set(localCards)]) {
+    const cardAbs = join(outDir, `${id}-card.webp`);
+    const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
+    const cardAvifAbs = join(outDir, `${id}-card.avif`);
+    const cardSmAvifAbs = join(outDir, `${id}-card-sm.avif`);
+    try {
+      await stat(cardAbs);
+      await ensureFromCard(cardAbs, cardSmAbs, CARD_SM_WIDTH, 'webp');
+      await ensureFromCard(cardAbs, cardAvifAbs, CARD_WIDTH, 'avif');
+      await ensureFromCard(cardAbs, cardSmAvifAbs, CARD_SM_WIDTH, 'avif');
+    } catch {
+      // card ausente
+    }
   }
 }
 
@@ -82,7 +121,9 @@ async function main() {
   const urls = [...xml.matchAll(/https?:\/\/[^\s<>|"']+\.(?:jpe?g|png|webp|gif)/gi)].map((m) => m[0]);
   const unique = [...new Set(urls)];
   if (!unique.length) {
-    console.log('[optimize-listings] no remote images found.');
+    console.log('[optimize-listings] no remote images found; ensuring local AVIF variants.');
+    await mkdir(outDir, { recursive: true });
+    await ensureLocalVariants(xml);
     return;
   }
 
@@ -93,8 +134,6 @@ async function main() {
     await optimizeUrl(url, cache);
   }
 
-  // Primeira ocorrência de cada URL no XML = capa (card); galeria usa detail.
-  // Estratégia: substituir todas por detail; a tag <image> (capa) por card.
   let next = xml;
   next = next.replace(/<image>([\s\S]*?)<\/image>/g, (_full, inner) => {
     const url = String(inner).trim();
@@ -111,42 +150,20 @@ async function main() {
     return `<images>${parts.join('|')}</images>`;
   });
 
-  // Qualquer URL remota residual em outros campos
   for (const [url, mapped] of cache) {
     if (url !== mapped.detail) {
       next = next.split(url).join(mapped.detail);
     }
   }
 
-  // Reaplicar capa card (o split/join acima pode ter virado detail)
   next = next.replace(/<image>([\s\S]*?)<\/image>/g, (_full, inner) => {
     const current = String(inner).trim();
-    // Se já é *-card.webp, ok; se é *-detail.webp do mesmo hash, troca para card
     const card = current.replace(/-detail\.webp$/i, '-card.webp');
     return `<image>${card}</image>`;
   });
 
   await writeFile(xmlPath, next, 'utf8');
-  // Se o XML já aponta para *-card.webp local (rebuild sem refetch), garante card-sm.
-  const localCards = [...xml.matchAll(/\/images\/listings\/opt\/([a-f0-9]+)-card\.webp/gi)].map((m) => m[1]);
-  for (const id of [...new Set(localCards)]) {
-    const cardAbs = join(outDir, `${id}-card.webp`);
-    const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
-    try {
-      await stat(cardAbs);
-      try {
-        await stat(cardSmAbs);
-      } catch {
-        await sharp(cardAbs)
-          .resize({ width: CARD_SM_WIDTH, withoutEnlargement: true })
-          .webp({ quality: WEBP_QUALITY, effort: 4 })
-          .toFile(cardSmAbs);
-        console.log(`[optimize-listings] ${id} card-sm from local card`);
-      }
-    } catch {
-      // card ausente — ignora
-    }
-  }
+  await ensureLocalVariants(next);
 
   console.log(`[optimize-listings] rewritten ${unique.length} image URL(s) in listings.xml.`);
 }

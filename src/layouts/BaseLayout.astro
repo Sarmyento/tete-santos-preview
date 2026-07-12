@@ -7,6 +7,8 @@ import Tracking from '../components/global/Tracking.astro';
 import { site } from '../config/site';
 import { organizationJsonLd, websiteJsonLd, localBusinessJsonLd } from '../lib/seo';
 import { assetPath } from '../lib/paths';
+import fraunces500 from '@fontsource/fraunces/files/fraunces-latin-500-normal.woff2?url';
+import spectral400 from '@fontsource/spectral/files/spectral-latin-400-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -56,10 +58,12 @@ const lcpDesktopAvif = assetPath('/images/hero/tete-H1-hero-formal-1280.avif');
     <meta name="theme-color" content="#5A2730" />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={`${site.name}: ${site.tagline}`} />
     <meta property="og:locale" content="pt_BR" />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -68,6 +72,8 @@ const lcpDesktopAvif = assetPath('/images/hero/tete-H1-hero-formal-1280.avif');
     <meta name="twitter:image" content={ogImage} />
 
     <link rel="icon" type="image/svg+xml" href={assetPath('/favicon.svg')} />
+    <link rel="preload" as="font" type="font/woff2" href={fraunces500} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={spectral400} crossorigin />
     {
       headerOverlay && (
         <>

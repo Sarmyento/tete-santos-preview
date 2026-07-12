@@ -5,13 +5,38 @@ import CtaBand from '../components/sections/CtaBand.astro';
 import RevealInit from '../components/sections/RevealInit.astro';
 import { site } from '../config/site';
 import { getListings } from '../lib/listings';
+import { breadcrumbJsonLd, itemListJsonLd } from '../lib/seo';
+import { sitePath } from '../lib/paths';
 
 const listings = getListings();
+const origin = Astro.site ?? new URL(site.domain);
+const pageUrl = new URL(sitePath('/imoveis'), origin).href;
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Início', url: new URL(sitePath('/'), origin).href },
+    { name: 'Imóveis', url: pageUrl },
+  ]),
+  itemListJsonLd(
+    listings.map((listing) => ({
+      name: listing.title,
+      url: new URL(sitePath(`/imoveis/${listing.slug}`), origin).href,
+      image: listing.image.startsWith('http')
+        ? listing.image
+        : new URL(listing.image, origin).href,
+    })),
+    {
+      name: 'Imóveis selecionados',
+      description: `Portfólio de alto luxo em ${site.region}.`,
+    },
+  ),
+];
 ---
 
 <BaseLayout
   title={`Imóveis | ${site.name}`}
   description={`Busca avançada de imóveis de alto luxo em ${site.region}. Filtre por localização, tipo, quartos, área e preço.`}
+  jsonLd={jsonLd}
 >
   <section class="page-hero section reveal">
     <div class="container page-hero__inner">

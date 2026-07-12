@@ -8,11 +8,30 @@ import CtaBand from '../components/sections/CtaBand.astro';
 import RevealInit from '../components/sections/RevealInit.astro';
 import { site } from '../config/site';
 import { getListings } from '../lib/listings';
+import { itemListJsonLd } from '../lib/seo';
+import { sitePath } from '../lib/paths';
 
 const featured = getListings({ featuredOnly: true, limit: 6 });
+const origin = Astro.site ?? new URL(site.domain);
+
+const listLd = featured.length
+  ? itemListJsonLd(
+      featured.map((listing) => ({
+        name: listing.title,
+        url: new URL(sitePath(`/imoveis/${listing.slug}`), origin).href,
+        image: listing.image.startsWith('http')
+          ? listing.image
+          : new URL(listing.image, origin).href,
+      })),
+      {
+        name: 'Imóveis em destaque',
+        description: `Curadoria de alto padrão em ${site.region}.`,
+      },
+    )
+  : undefined;
 ---
 
-<BaseLayout headerOverlay={true}>
+<BaseLayout headerOverlay={true} jsonLd={listLd}>
   <HeroSlideshow />
   <ListingsGrid listings={featured} />
   <AboutTeaser />

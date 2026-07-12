@@ -77,6 +77,26 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
   };
 }
 
+export function itemListJsonLd(
+  items: { name: string; url: string; image?: string }[],
+  opts: { name: string; description?: string } = { name: 'Imóveis' },
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: opts.name,
+    ...(opts.description ? { description: opts.description } : {}),
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: item.url,
+      ...(item.image ? { image: item.image } : {}),
+    })),
+  };
+}
+
 /**
  * Ficha de imóvel. Multi-type Product + RealEstateListing:
  * Product/Offer para elegibilidade de rich results; RealEstateListing para address/floorSize.

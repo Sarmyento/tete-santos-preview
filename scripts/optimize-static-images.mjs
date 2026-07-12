@@ -1,9 +1,12 @@
 /**
- * Converte heroes/about PNG → WebP (e AVIF) para LCP.
+ * Converte heroes/about PNG → WebP/AVIF para LCP.
  * Idempotente: só regenera se o destino não existir ou for mais antigo que o PNG.
+ * Em Cloudflare Pages (CF_PAGES=1), remove os PNG masters do public/ após converter
+ * para não shippar ~14 MB no deploy.
  *
  * Uso: node scripts/optimize-static-images.mjs
  */
+import { unlink } from 'node:fs/promises';
 import { stat } from 'node:fs/promises';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { readdirSync } from 'node:fs';
@@ -15,13 +18,32 @@ const dirs = [
   resolve(root, 'public/images/about'),
 ];
 
-const VARIANTS = [
-  { suffix: '', width: null, quality: 72 },
-  { suffix: '-1280', width: 1280, quality: 72 },
-  { suffix: '-768', width: 768, quality: 70 },
-  { suffix: '-540', width: 540, quality: 70 },
-  { suffix: '-320', width: 320, quality: 68 },
-];
+/** Variantes por prefixo de arquivo (evita gerar -320/-540 em heroes desktop). */
+function variantsFor(baseName) {
+  if (baseName.includes('mobile') || baseName.includes('H5')) {
+    return [
+      { suffix: '', width: null, quality: 72 },
+      { suffix: '-768', width: 768, quality: 70 },
+    ];
+  }
+  if (baseName.startsWith('tete-P') || baseName.includes('about')) {
+    return [
+      { suffix: '-540', width: 540, quality: 70 },
+      { suffix: '-320', width: 320, quality: 68 },
+      { suffix: '', width: null, quality: 72 },
+    ];
+  }
+  // Heroes desktop H1–H4
+  return [
+    { suffix: '', width: null, quality: 72 },
+    { suffix: '-1280', width: 1280, quality: 72 },
+  ];
+}
+
+const stripPng =
+  process.env.CF_PAGES === '1' ||
+  process.env.STRIP_SOURCE_PNG === '1' ||
+  process.argv.includes('--strip-png');
 
 async function needsRebuild(src, dest) {
   try {
@@ -37,9 +59,9 @@ async function convertPng(srcPath) {
   const base = basename(srcPath, extname(srcPath));
   const meta = await sharp(srcPath).metadata();
   const results = [];
+  const variants = variantsFor(base);
 
-  for (const variant of VARIANTS) {
-    // Não upscale em variantes com width fixo
+  for (const variant of variants) {
     if (variant.width && meta.width && variant.width >= meta.width) continue;
 
     const webpOut = join(dir, `${base}${variant.suffix}.webp`);
@@ -61,6 +83,18 @@ async function convertPng(srcPath) {
     if (await needsRebuild(srcPath, avifOut)) {
       await pipeline('avif').toFile(avifOut);
       results.push(avifOut);
+    }
+  }
+
+  if (stripPng) {
+    // Confirma que o WebP full existe antes de apagar o PNG
+    const webpFull = join(dir, `${base}.webp`);
+    try {
+      await stat(webpFull);
+      await unlink(srcPath);
+      console.log(`[optimize-static] stripped ${basename(srcPath)}`);
+    } catch {
+      // mantém PNG se conversão falhou
     }
   }
 
@@ -87,7 +121,7 @@ async function main() {
       }
     }
   }
-  console.log(`[optimize-static] done (${created} files written/updated).`);
+  console.log(`[optimize-static] done (${created} files written/updated). stripPng=${stripPng}`);
 }
 
 main().catch((error) => {
