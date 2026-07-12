@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 
 export interface Listing {
   id: string;
@@ -126,13 +126,25 @@ export function toListingThumbSrc(src: string): string {
   return src;
 }
 
+function publicAssetExists(webPath: string): boolean {
+  if (!webPath.startsWith('/')) return false;
+  try {
+    return existsSync(join(process.cwd(), 'public', webPath.slice(1)));
+  } catch {
+    return false;
+  }
+}
+
+/** AVIF só se o arquivo existir (CI gera WebP-only por padrão). */
 export function toListingDetailAvif(src: string): string {
-  if (src.includes('-detail.webp')) return src.replace('-detail.webp', '-detail.avif');
-  return '';
+  if (!src.includes('-detail.webp')) return '';
+  const avif = src.replace('-detail.webp', '-detail.avif');
+  return publicAssetExists(avif) ? avif : '';
 }
 
 export function toListingThumbAvif(src: string): string {
   const thumb = toListingThumbSrc(src);
-  if (thumb.includes('-thumb.webp')) return thumb.replace('-thumb.webp', '-thumb.avif');
-  return '';
+  if (!thumb.includes('-thumb.webp')) return '';
+  const avif = thumb.replace('-thumb.webp', '-thumb.avif');
+  return publicAssetExists(avif) ? avif : '';
 }
