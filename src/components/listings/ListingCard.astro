@@ -9,13 +9,18 @@ interface Props {
 const { listing } = Astro.props;
 const detailUrl = sitePath(`/imoveis/${listing.slug}`);
 const fallbackImage = assetPath('/images/listings/fallback-property.svg');
+const imageSrc = listing.image;
+const imageSrcSm = imageSrc.includes('-card.webp')
+  ? imageSrc.replace('-card.webp', '-card-sm.webp')
+  : imageSrc;
 ---
 
 <article class="listing-card card-hover">
   <a class="listing-card__link" href={detailUrl}>
     <div class="listing-card__media card-hover__media">
       <img
-        src={listing.image}
+        src={imageSrc}
+        srcset={`${imageSrcSm} 400w, ${imageSrc} 800w`}
         alt={listing.title}
         loading="lazy"
         width="800"

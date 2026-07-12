@@ -28,9 +28,6 @@ const {
   bodyClass = '',
 } = Astro.props;
 
-const fontLink =
-  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap';
-
 const origin = Astro.site ?? new URL(site.domain);
 const canonical = new URL(Astro.url.pathname, origin).href;
 const ogImage = new URL(image, origin).href;
@@ -42,6 +39,9 @@ const baseLd = [
 ];
 const pageLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const allLd = [...baseLd, ...pageLd];
+
+const lcpMobileAvif = assetPath('/images/hero/tete-H5-mobile-vertical-768.avif');
+const lcpDesktopAvif = assetPath('/images/hero/tete-H1-hero-formal-1280.avif');
 ---
 
 <!doctype html>
@@ -68,13 +68,28 @@ const allLd = [...baseLd, ...pageLd];
     <meta name="twitter:image" content={ogImage} />
 
     <link rel="icon" type="image/svg+xml" href={assetPath('/favicon.svg')} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    {/* CSS de fontes não bloqueante: carrega como print e promove a all */}
-    <link href={fontLink} rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript>
-      <link href={fontLink} rel="stylesheet" />
-    </noscript>
+    {
+      headerOverlay && (
+        <>
+          <link
+            rel="preload"
+            as="image"
+            type="image/avif"
+            href={lcpMobileAvif}
+            media="(max-width: 767px)"
+            fetchpriority="high"
+          />
+          <link
+            rel="preload"
+            as="image"
+            type="image/avif"
+            href={lcpDesktopAvif}
+            media="(min-width: 768px)"
+            fetchpriority="high"
+          />
+        </>
+      )
+    }
 
     <script type="application/ld+json" set:html={JSON.stringify(allLd)} />
     <Tracking />

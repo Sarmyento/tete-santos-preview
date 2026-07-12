@@ -3,14 +3,17 @@ import { site } from '../../config/site';
 import { assetPath, sitePath } from '../../lib/paths';
 
 const p1 = {
+  avif540: assetPath('/images/about/tete-P1-headshot-sorriso-540.avif'),
+  avif320: assetPath('/images/about/tete-P1-headshot-sorriso-320.avif'),
+  webp540: assetPath('/images/about/tete-P1-headshot-sorriso-540.webp'),
+  webp320: assetPath('/images/about/tete-P1-headshot-sorriso-320.webp'),
   webp: assetPath('/images/about/tete-P1-headshot-sorriso.webp'),
-  webp768: assetPath('/images/about/tete-P1-headshot-sorriso-768.webp'),
-  avif: assetPath('/images/about/tete-P1-headshot-sorriso.avif'),
 };
 const p2 = {
+  avif320: assetPath('/images/about/tete-P2-headshot-3quartos-320.avif'),
+  webp320: assetPath('/images/about/tete-P2-headshot-3quartos-320.webp'),
+  webp540: assetPath('/images/about/tete-P2-headshot-3quartos-540.webp'),
   webp: assetPath('/images/about/tete-P2-headshot-3quartos.webp'),
-  webp768: assetPath('/images/about/tete-P2-headshot-3quartos-768.webp'),
-  avif: assetPath('/images/about/tete-P2-headshot-3quartos.avif'),
 };
 ---
 
@@ -18,19 +21,34 @@ const p2 = {
   <div class="container about-teaser">
     <div class="about-teaser__media">
       <picture>
-        <source type="image/avif" srcset={`${p1.avif} 540w`} sizes="(min-width: 900px) 520px, 90vw" />
+        <source
+          type="image/avif"
+          srcset={`${p1.avif320} 320w, ${p1.avif540} 540w`}
+          sizes="(min-width: 900px) 480px, 85vw"
+        />
         <source
           type="image/webp"
-          srcset={`${p1.webp768} 768w, ${p1.webp} 1080w`}
-          sizes="(min-width: 900px) 520px, 90vw"
+          srcset={`${p1.webp320} 320w, ${p1.webp540} 540w, ${p1.webp} 1024w`}
+          sizes="(min-width: 900px) 480px, 85vw"
         />
-        <img src={p1.webp} alt="Retrato de Tetê Santos" loading="lazy" width="540" height="540" decoding="async" />
+        <img
+          src={p1.webp540}
+          alt="Retrato de Tetê Santos"
+          loading="lazy"
+          width="540"
+          height="540"
+          decoding="async"
+        />
       </picture>
       <picture class="about-teaser__secondary">
-        <source type="image/avif" srcset={p2.avif} />
-        <source type="image/webp" srcset={`${p2.webp768} 320w, ${p2.webp} 640w`} sizes="160px" />
+        <source type="image/avif" srcset={`${p2.avif320} 320w`} sizes="160px" />
+        <source
+          type="image/webp"
+          srcset={`${p2.webp320} 320w, ${p2.webp540} 540w`}
+          sizes="160px"
+        />
         <img
-          src={p2.webp}
+          src={p2.webp320}
           alt="Tetê Santos em retrato de tres quartos"
           loading="lazy"
           width="320"

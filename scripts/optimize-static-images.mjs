@@ -19,6 +19,8 @@ const VARIANTS = [
   { suffix: '', width: null, quality: 72 },
   { suffix: '-1280', width: 1280, quality: 72 },
   { suffix: '-768', width: 768, quality: 70 },
+  { suffix: '-540', width: 540, quality: 70 },
+  { suffix: '-320', width: 320, quality: 68 },
 ];
 
 async function needsRebuild(src, dest) {

@@ -5,7 +5,7 @@
  * Roda depois de fetch-listings.mjs no prebuild.
  */
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import sharp from 'sharp';
 
@@ -14,6 +14,7 @@ const xmlPath = resolve(root, 'public/data/listings.xml');
 const outDir = resolve(root, 'public/images/listings/opt');
 
 const CARD_WIDTH = 800;
+const CARD_SM_WIDTH = 400;
 const DETAIL_WIDTH = 1400;
 const WEBP_QUALITY = 72;
 
@@ -45,22 +46,25 @@ async function optimizeUrl(url, cache) {
 
   const id = hashUrl(url);
   const cardRel = `/images/listings/opt/${id}-card.webp`;
+  const cardSmRel = `/images/listings/opt/${id}-card-sm.webp`;
   const detailRel = `/images/listings/opt/${id}-detail.webp`;
   const cardAbs = join(outDir, `${id}-card.webp`);
+  const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
   const detailAbs = join(outDir, `${id}-detail.webp`);
 
   try {
     const buffer = await download(url);
     await writeVariant(buffer, cardAbs, CARD_WIDTH);
+    await writeVariant(buffer, cardSmAbs, CARD_SM_WIDTH);
     await writeVariant(buffer, detailAbs, DETAIL_WIDTH);
-    const mapped = { card: cardRel, detail: detailRel };
+    const mapped = { card: cardRel, cardSm: cardSmRel, detail: detailRel };
     cache.set(url, mapped);
     console.log(`[optimize-listings] ${id} ok (${(buffer.length / 1024).toFixed(0)} KB → webp)`);
     return mapped;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[optimize-listings] keep remote ${url}: ${message}`);
-    const mapped = { card: url, detail: url };
+    const mapped = { card: url, cardSm: url, detail: url };
     cache.set(url, mapped);
     return mapped;
   }
@@ -123,6 +127,27 @@ async function main() {
   });
 
   await writeFile(xmlPath, next, 'utf8');
+  // Se o XML já aponta para *-card.webp local (rebuild sem refetch), garante card-sm.
+  const localCards = [...xml.matchAll(/\/images\/listings\/opt\/([a-f0-9]+)-card\.webp/gi)].map((m) => m[1]);
+  for (const id of [...new Set(localCards)]) {
+    const cardAbs = join(outDir, `${id}-card.webp`);
+    const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
+    try {
+      await stat(cardAbs);
+      try {
+        await stat(cardSmAbs);
+      } catch {
+        await sharp(cardAbs)
+          .resize({ width: CARD_SM_WIDTH, withoutEnlargement: true })
+          .webp({ quality: WEBP_QUALITY, effort: 4 })
+          .toFile(cardSmAbs);
+        console.log(`[optimize-listings] ${id} card-sm from local card`);
+      }
+    } catch {
+      // card ausente — ignora
+    }
+  }
+
   console.log(`[optimize-listings] rewritten ${unique.length} image URL(s) in listings.xml.`);
 }
 
