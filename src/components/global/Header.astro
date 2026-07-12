@@ -77,8 +77,11 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
     header?.classList.toggle('header--scrolled', window.scrollY > 48);
   };
 
+  // Não ler layout no parse: só reage a scroll (evita reflow forçado no first paint)
   window.addEventListener('scroll', syncScroll, { passive: true });
-  syncScroll();
+  if (window.scrollY > 48) {
+    requestAnimationFrame(syncScroll);
+  }
 
   menuToggle?.addEventListener('click', () => {
     const open = menuToggle.getAttribute('aria-expanded') === 'true';

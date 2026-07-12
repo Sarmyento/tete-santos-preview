@@ -17,6 +17,8 @@ export default defineConfig({
   integrations: [sitemap()],
   build: {
     assets: '_astro',
+    // CSS total ~6 KiB: inline evita cadeia crítica de 2 requests render-blocking no Lighthouse
+    inlineStylesheets: 'always',
   },
   vite: {
     css: {

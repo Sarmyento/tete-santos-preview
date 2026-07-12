@@ -29,7 +29,11 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
       <p class="footer__label">Contato</p>
       <ul class="footer__links">
         <li><a href={waUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-        <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+        <li>
+          <!--email_off-->
+          <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+          <!--email_on-->
+        </li>
         <li>{site.contact.phone}</li>
         {
           site.social.instagram && (
