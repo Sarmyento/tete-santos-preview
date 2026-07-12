@@ -111,3 +111,28 @@ export function getListingMapEmbedUrl(listing: Listing): string {
   const query = formatListingAddress(listing);
   return `https://www.google.com/maps?q=${encodeURIComponent(query)}&hl=pt&z=15&output=embed`;
 }
+
+export function getListingMapExternalUrl(listing: Listing): string {
+  const query = formatListingAddress(listing);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+/** Miniatura da galeria a partir da URL otimizada (-detail → -thumb). */
+export function toListingThumbSrc(src: string): string {
+  if (!src) return src;
+  if (src.includes('-detail.webp')) return src.replace('-detail.webp', '-thumb.webp');
+  if (src.includes('-detail.avif')) return src.replace('-detail.avif', '-thumb.avif');
+  if (src.includes('-card.webp')) return src.replace('-card.webp', '-card-sm.webp');
+  return src;
+}
+
+export function toListingDetailAvif(src: string): string {
+  if (src.includes('-detail.webp')) return src.replace('-detail.webp', '-detail.avif');
+  return '';
+}
+
+export function toListingThumbAvif(src: string): string {
+  const thumb = toListingThumbSrc(src);
+  if (thumb.includes('-thumb.webp')) return thumb.replace('-thumb.webp', '-thumb.avif');
+  return '';
+}

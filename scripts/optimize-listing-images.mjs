@@ -16,8 +16,11 @@ const outDir = resolve(root, 'public/images/listings/opt');
 const CARD_WIDTH = 800;
 const CARD_SM_WIDTH = 400;
 const DETAIL_WIDTH = 1400;
+const THUMB_WIDTH = 320;
 const WEBP_QUALITY = 72;
 const AVIF_QUALITY = 55;
+const THUMB_WEBP_QUALITY = 68;
+const THUMB_AVIF_QUALITY = 50;
 
 function hashUrl(url) {
   return createHash('sha1').update(url).digest('hex').slice(0, 12);
@@ -34,16 +37,16 @@ async function download(url) {
   return Buffer.from(await response.arrayBuffer());
 }
 
-async function writeVariant(buffer, outPath, width, format) {
+async function writeVariant(buffer, outPath, width, format, qualityWebp = WEBP_QUALITY, qualityAvif = AVIF_QUALITY) {
   let img = sharp(buffer).rotate().resize({ width, withoutEnlargement: true });
   if (format === 'avif') {
-    await img.avif({ quality: AVIF_QUALITY, effort: 4 }).toFile(outPath);
+    await img.avif({ quality: qualityAvif, effort: 4 }).toFile(outPath);
   } else {
-    await img.webp({ quality: WEBP_QUALITY, effort: 4 }).toFile(outPath);
+    await img.webp({ quality: qualityWebp, effort: 4 }).toFile(outPath);
   }
 }
 
-async function ensureFromCard(cardAbs, destAbs, width, format) {
+async function ensureFromCard(cardAbs, destAbs, width, format, qualityWebp = WEBP_QUALITY, qualityAvif = AVIF_QUALITY) {
   try {
     await stat(destAbs);
     return;
@@ -52,9 +55,9 @@ async function ensureFromCard(cardAbs, destAbs, width, format) {
   }
   let img = sharp(cardAbs).resize({ width, withoutEnlargement: true });
   if (format === 'avif') {
-    await img.avif({ quality: AVIF_QUALITY, effort: 4 }).toFile(destAbs);
+    await img.avif({ quality: qualityAvif, effort: 4 }).toFile(destAbs);
   } else {
-    await img.webp({ quality: WEBP_QUALITY, effort: 4 }).toFile(destAbs);
+    await img.webp({ quality: qualityWebp, effort: 4 }).toFile(destAbs);
   }
 }
 
@@ -65,22 +68,29 @@ async function optimizeUrl(url, cache) {
   const cardRel = `/images/listings/opt/${id}-card.webp`;
   const cardSmRel = `/images/listings/opt/${id}-card-sm.webp`;
   const detailRel = `/images/listings/opt/${id}-detail.webp`;
+  const thumbRel = `/images/listings/opt/${id}-thumb.webp`;
   const cardAbs = join(outDir, `${id}-card.webp`);
   const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
   const detailAbs = join(outDir, `${id}-detail.webp`);
+  const detailAvifAbs = join(outDir, `${id}-detail.avif`);
+  const thumbAbs = join(outDir, `${id}-thumb.webp`);
   const cardAvifAbs = join(outDir, `${id}-card.avif`);
   const cardSmAvifAbs = join(outDir, `${id}-card-sm.avif`);
+  const thumbAvifAbs = join(outDir, `${id}-thumb.avif`);
 
   try {
     const buffer = await download(url);
     await writeVariant(buffer, cardAbs, CARD_WIDTH, 'webp');
     await writeVariant(buffer, cardSmAbs, CARD_SM_WIDTH, 'webp');
     await writeVariant(buffer, detailAbs, DETAIL_WIDTH, 'webp');
+    await writeVariant(buffer, detailAvifAbs, DETAIL_WIDTH, 'avif');
+    await writeVariant(buffer, thumbAbs, THUMB_WIDTH, 'webp', THUMB_WEBP_QUALITY, THUMB_AVIF_QUALITY);
     await writeVariant(buffer, cardAvifAbs, CARD_WIDTH, 'avif');
     await writeVariant(buffer, cardSmAvifAbs, CARD_SM_WIDTH, 'avif');
-    const mapped = { card: cardRel, cardSm: cardSmRel, detail: detailRel };
+    await writeVariant(buffer, thumbAvifAbs, THUMB_WIDTH, 'avif', THUMB_WEBP_QUALITY, THUMB_AVIF_QUALITY);
+    const mapped = { card: cardRel, cardSm: cardSmRel, detail: detailRel, thumb: thumbRel };
     cache.set(url, mapped);
-    console.log(`[optimize-listings] ${id} ok (${(buffer.length / 1024).toFixed(0)} KB → webp+avif)`);
+    console.log(`[optimize-listings] ${id} ok (${(buffer.length / 1024).toFixed(0)} KB → webp+avif+thumb)`);
     return mapped;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -92,19 +102,54 @@ async function optimizeUrl(url, cache) {
 }
 
 async function ensureLocalVariants(xml) {
-  const localCards = [...xml.matchAll(/\/images\/listings\/opt\/([a-f0-9]+)-card\.webp/gi)].map((m) => m[1]);
-  for (const id of [...new Set(localCards)]) {
+  const fromXml = [
+    ...xml.matchAll(/\/images\/listings\/opt\/([a-f0-9]+)-(?:detail|card)\.webp/gi),
+  ].map((m) => m[1]);
+
+  let fromDisk = [];
+  try {
+    const { readdir } = await import('node:fs/promises');
+    const files = await readdir(outDir);
+    fromDisk = files
+      .map((name) => name.match(/^([a-f0-9]+)-(?:detail|card)\.webp$/i)?.[1])
+      .filter(Boolean);
+  } catch {
+    // pasta ainda vazia
+  }
+
+  const ids = [...new Set([...fromXml, ...fromDisk])];
+
+  for (const id of ids) {
     const cardAbs = join(outDir, `${id}-card.webp`);
     const cardSmAbs = join(outDir, `${id}-card-sm.webp`);
+    const detailAbs = join(outDir, `${id}-detail.webp`);
+    const thumbAbs = join(outDir, `${id}-thumb.webp`);
     const cardAvifAbs = join(outDir, `${id}-card.avif`);
     const cardSmAvifAbs = join(outDir, `${id}-card-sm.avif`);
+    const thumbAvifAbs = join(outDir, `${id}-thumb.avif`);
     try {
-      await stat(cardAbs);
-      await ensureFromCard(cardAbs, cardSmAbs, CARD_SM_WIDTH, 'webp');
-      await ensureFromCard(cardAbs, cardAvifAbs, CARD_WIDTH, 'avif');
-      await ensureFromCard(cardAbs, cardSmAvifAbs, CARD_SM_WIDTH, 'avif');
+      const sourceForThumb = (await stat(detailAbs).then(() => detailAbs).catch(() => null))
+        || (await stat(cardAbs).then(() => cardAbs).catch(() => null));
+      if (!sourceForThumb) continue;
+
+      try {
+        await stat(cardAbs);
+        await ensureFromCard(cardAbs, cardSmAbs, CARD_SM_WIDTH, 'webp');
+        await ensureFromCard(cardAbs, cardAvifAbs, CARD_WIDTH, 'avif');
+        await ensureFromCard(cardAbs, cardSmAvifAbs, CARD_SM_WIDTH, 'avif');
+      } catch {
+        // card ausente
+      }
+
+      await ensureFromCard(sourceForThumb, thumbAbs, THUMB_WIDTH, 'webp', THUMB_WEBP_QUALITY, THUMB_AVIF_QUALITY);
+      await ensureFromCard(sourceForThumb, thumbAvifAbs, THUMB_WIDTH, 'avif', THUMB_WEBP_QUALITY, THUMB_AVIF_QUALITY);
+      if (sourceForThumb.endsWith('-detail.webp')) {
+        const detailAvifAbs = join(outDir, `${id}-detail.avif`);
+        await ensureFromCard(sourceForThumb, detailAvifAbs, DETAIL_WIDTH, 'avif');
+      }
+      console.log(`[optimize-listings] ${id} thumb ensured`);
     } catch {
-      // card ausente
+      // ignora
     }
   }
 }

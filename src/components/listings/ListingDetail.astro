@@ -1,6 +1,13 @@
 ---
 import type { Listing } from '../../lib/listings';
-import { formatListingAddress, getListingMapEmbedUrl } from '../../lib/listings';
+import {
+  formatListingAddress,
+  getListingMapEmbedUrl,
+  getListingMapExternalUrl,
+  toListingThumbSrc,
+  toListingDetailAvif,
+  toListingThumbAvif,
+} from '../../lib/listings';
 import { site } from '../../config/site';
 import { assetPath } from '../../lib/paths';
 
@@ -13,8 +20,11 @@ const defaultMessage = `Olá Tetê, gostaria de receber mais informações sobre
 const waNumber = site.whatsapp.number;
 const addressLine = formatListingAddress(listing);
 const mapEmbedUrl = getListingMapEmbedUrl(listing);
+const mapExternalUrl = getListingMapExternalUrl(listing);
 const galleryImages = listing.images;
 const fallbackImage = assetPath('/images/listings/fallback-property.svg');
+const mainSrc = galleryImages[0] ?? fallbackImage;
+const mainAvif = toListingDetailAvif(mainSrc);
 
 const specs = [
   { value: String(listing.bedrooms), label: 'quartos' },
@@ -50,16 +60,20 @@ const specs = [
     <div class="listing-detail__body">
       <div class="listing-detail__gallery-shell reveal-scale" data-listing-gallery>
         <figure class="listing-detail__featured">
-          <img
-            src={galleryImages[0]}
-            alt={listing.title}
-            width="1400"
-            height="788"
-            loading="eager"
-            fetchpriority="high"
-            data-gallery-main
-            onerror={`this.onerror=null;this.src='${fallbackImage}';`}
-          />
+          <picture>
+            {mainAvif && <source type="image/avif" srcset={mainAvif} data-gallery-main-avif />}
+            <img
+              src={mainSrc}
+              alt={listing.title}
+              width="1400"
+              height="788"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              data-gallery-main
+              onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+            />
+          </picture>
           {
             galleryImages.length > 1 && (
               <>
@@ -102,26 +116,35 @@ const specs = [
                 }
                 <div class="listing-detail__gallery-track" data-gallery-track>
                   {
-                    galleryImages.map((image, index) => (
-                      <button
-                        type="button"
-                        class:list={['listing-detail__gallery-thumb', { 'is-active': index === 0 }]}
-                        data-gallery-thumb
-                        data-index={index}
-                        data-src={image}
-                        aria-label={`Ver foto ${index + 1} de ${galleryImages.length}`}
-                        aria-current={index === 0 ? 'true' : undefined}
-                      >
-                        <img
-                          src={image}
-                          alt={`${listing.title} miniatura ${index + 1}`}
-                          loading={index === 0 ? 'eager' : 'lazy'}
-                          width="120"
-                          height="68"
-                          onerror={`this.onerror=null;this.src='${fallbackImage}';`}
-                        />
-                      </button>
-                    ))
+                    galleryImages.map((image, index) => {
+                      const thumb = toListingThumbSrc(image);
+                      const thumbAvif = toListingThumbAvif(image);
+                      return (
+                        <button
+                          type="button"
+                          class:list={['listing-detail__gallery-thumb', { 'is-active': index === 0 }]}
+                          data-gallery-thumb
+                          data-index={index}
+                          data-src={image}
+                          data-src-avif={toListingDetailAvif(image) || undefined}
+                          aria-label={`Ver foto ${index + 1} de ${galleryImages.length}`}
+                          aria-current={index === 0 ? 'true' : undefined}
+                        >
+                          <picture>
+                            {thumbAvif && <source type="image/avif" srcset={thumbAvif} />}
+                            <img
+                              src={thumb}
+                              alt={`${listing.title} miniatura ${index + 1}`}
+                              loading={index < 4 ? 'eager' : 'lazy'}
+                              decoding="async"
+                              width="320"
+                              height="180"
+                              onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+                            />
+                          </picture>
+                        </button>
+                      );
+                    })
                   }
                 </div>
                 {
@@ -167,14 +190,23 @@ const specs = [
         <h2>Localização</h2>
         <p class="listing-detail__location-text">{addressLine}</p>
         <div class="listing-detail__map-brand-frame">
-          <div class="listing-detail__map-inner">
-            <iframe
-              title={`Mapa: ${addressLine}`}
-              src={mapEmbedUrl}
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-            />
+          <div
+            class="listing-detail__map-inner listing-detail__map-facade"
+            data-map-facade
+            data-map-src={mapEmbedUrl}
+          >
+            <p class="listing-detail__map-facade-text">{addressLine}</p>
+            <button type="button" class="btn btn-accent btn-motion" data-map-load>
+              Carregar mapa
+            </button>
+            <a
+              class="listing-detail__map-external"
+              href={mapExternalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Abrir no Google Maps
+            </a>
           </div>
         </div>
       </section>
@@ -231,6 +263,7 @@ const specs = [
   const galleryRoot = document.querySelector('[data-listing-gallery]');
   if (galleryRoot) {
     const mainImg = galleryRoot.querySelector('[data-gallery-main]');
+    const mainAvif = galleryRoot.querySelector('[data-gallery-main-avif]');
     const track = galleryRoot.querySelector('[data-gallery-track]');
     const thumbs = [...galleryRoot.querySelectorAll('[data-gallery-thumb]')];
     const prevBtn = galleryRoot.querySelector('[data-gallery-prev]');
@@ -253,8 +286,13 @@ const specs = [
       currentIndex = (index + thumbs.length) % thumbs.length;
       const thumb = thumbs[currentIndex];
       const src = thumb.getAttribute('data-src');
+      const avif = thumb.getAttribute('data-src-avif');
       if (!src) return;
       mainImg.src = src;
+      if (mainAvif) {
+        if (avif) mainAvif.setAttribute('srcset', avif);
+        else mainAvif.removeAttribute('srcset');
+      }
       setActiveThumb(currentIndex);
       thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     };
@@ -274,6 +312,20 @@ const specs = [
       track?.scrollBy({ left: scrollStep, behavior: 'smooth' });
     });
   }
+
+  const mapFacade = document.querySelector('[data-map-facade]');
+  mapFacade?.querySelector('[data-map-load]')?.addEventListener('click', () => {
+    const src = mapFacade.getAttribute('data-map-src');
+    if (!src) return;
+    const iframe = document.createElement('iframe');
+    iframe.title = 'Mapa do imóvel';
+    iframe.src = src;
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    iframe.allowFullscreen = true;
+    mapFacade.replaceChildren(iframe);
+    mapFacade.classList.remove('listing-detail__map-facade');
+  });
 </script>
 
 <style>
@@ -404,11 +456,15 @@ const specs = [
     margin: 0;
   }
 
+  .listing-detail__featured picture,
   .listing-detail__featured img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+  }
+
+  .listing-detail__featured picture {
     border: 1px solid var(--color-line);
     box-shadow: var(--shadow-soft);
   }
@@ -498,11 +554,15 @@ const specs = [
     border-color: var(--color-accent);
   }
 
+  .listing-detail__gallery-thumb picture,
   .listing-detail__gallery-thumb img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+  }
+
+  .listing-detail__gallery-thumb picture {
     border: 1px solid var(--color-line);
   }
 
@@ -588,6 +648,33 @@ const specs = [
     height: 100%;
     border: 0;
     background: var(--color-white);
+  }
+
+  .listing-detail__map-facade {
+    display: grid;
+    place-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background:
+      linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--color-primary) 18%, var(--color-background)),
+        var(--color-background)
+      );
+    text-align: center;
+  }
+
+  .listing-detail__map-facade-text {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    max-width: 36ch;
+    justify-self: center;
+  }
+
+  .listing-detail__map-external {
+    font-size: 0.9rem;
+    color: var(--color-accent);
   }
 
   .listing-detail__sidebar {
