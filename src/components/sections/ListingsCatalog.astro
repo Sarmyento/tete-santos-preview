@@ -41,21 +41,35 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
           </select>
         </label>
 
-        <label>
-          <span>Bairro</span>
-          <select name="neighborhood">
-            <option value="">Todos</option>
-            {neighborhoods.map((neighborhood) => <option value={neighborhood}>{neighborhood}</option>)}
-          </select>
-        </label>
+        <div class="multi-select" data-multi-select="neighborhood">
+          <span class="multi-select__label">Bairro</span>
+          <button type="button" class="multi-select__trigger" data-multi-select-trigger>
+            Todos
+          </button>
+          <div class="multi-select__dropdown" data-multi-select-dropdown hidden>
+            {neighborhoods.map((n) => (
+              <label class="multi-select__option">
+                <input type="checkbox" name="neighborhood" value={n} />
+                <span>{n}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
-        <label>
-          <span>Tipo</span>
-          <select name="type">
-            <option value="">Todos</option>
-            {types.map((type) => <option value={type}>{type}</option>)}
-          </select>
-        </label>
+        <div class="multi-select" data-multi-select="type">
+          <span class="multi-select__label">Tipo</span>
+          <button type="button" class="multi-select__trigger" data-multi-select-trigger>
+            Todos
+          </button>
+          <div class="multi-select__dropdown" data-multi-select-dropdown hidden>
+            {types.map((t) => (
+              <label class="multi-select__option">
+                <input type="checkbox" name="type" value={t} />
+                <span>{t}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
         <label>
           <span>Quartos (mín.)</span>
@@ -71,38 +85,17 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
 
         <label>
           <span>Preço mínimo</span>
-          <select name="priceMin">
-            <option value="">Sem mínimo</option>
-            <option value="1000000">R$ 1.000.000</option>
-            <option value="1500000">R$ 1.500.000</option>
-            <option value="2000000">R$ 2.000.000</option>
-            <option value="2500000">R$ 2.500.000</option>
-            <option value="3000000">R$ 3.000.000</option>
-          </select>
+          <input type="number" name="priceMin" min="0" step="100000" placeholder="Ex: 1000000" />
         </label>
 
         <label>
           <span>Preço máximo</span>
-          <select name="priceMax">
-            <option value="">Sem máximo</option>
-            <option value="1500000">R$ 1.500.000</option>
-            <option value="2000000">R$ 2.000.000</option>
-            <option value="2500000">R$ 2.500.000</option>
-            <option value="3000000">R$ 3.000.000</option>
-            <option value="3500000">R$ 3.500.000</option>
-          </select>
+          <input type="number" name="priceMax" min="0" step="100000" placeholder="Ex: 3000000" />
         </label>
 
         <label>
           <span>Área mínima (m²)</span>
-          <select name="areaMin">
-            <option value="">Qualquer</option>
-            <option value="100">100 m²</option>
-            <option value="150">150 m²</option>
-            <option value="200">200 m²</option>
-            <option value="300">300 m²</option>
-            <option value="400">400 m²</option>
-          </select>
+          <input type="number" name="areaMin" min="0" step="10" placeholder="Ex: 100" />
         </label>
 
         <div class="filters-form__actions">
@@ -132,6 +125,12 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
       }
     </div>
 
+    <div class="listings-pagination">
+      <button class="btn btn-secondary btn-motion" data-load-more hidden aria-label="Carregar mais imóveis">
+        Carregar mais 15 imóveis
+      </button>
+    </div>
+
     <p class="listings-empty" data-listings-empty hidden>
       Nenhum imóvel corresponde aos filtros selecionados. Ajuste a busca ou fale com Tetê para curadoria personalizada.
     </p>
@@ -139,22 +138,60 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
 </section>
 
 <script>
+  const PAGE_SIZE = 15;
   const form = document.querySelector('[data-listings-filter]');
   const items = [...document.querySelectorAll('[data-listing-item]')];
   const countEl = document.querySelector('[data-results-count]');
   const emptyEl = document.querySelector('[data-listings-empty]');
   const gridEl = document.querySelector('[data-listings-grid]');
+  const loadMoreBtn = document.querySelector('[data-load-more]');
 
+  let visibleLimit = PAGE_SIZE;
+
+  /* ---- Multi-select widget ---- */
+  document.querySelectorAll('[data-multi-select]').forEach((container) => {
+    const trigger = container.querySelector('[data-multi-select-trigger]');
+    const dropdown = container.querySelector('[data-multi-select-dropdown]');
+    const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+
+    function updateTriggerText() {
+      const checked = [...checkboxes].filter((cb) => cb.checked);
+      trigger.textContent = checked.length
+        ? `${checked.length} selecionado${checked.length === 1 ? '' : 's'}`
+        : 'Todos';
+    }
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !dropdown.hasAttribute('hidden');
+      document.querySelectorAll('[data-multi-select-dropdown]').forEach((d) => d.setAttribute('hidden', ''));
+      dropdown.toggleAttribute('hidden', isOpen);
+    });
+
+    checkboxes.forEach((cb) => {
+      cb.addEventListener('change', () => {
+        updateTriggerText();
+        visibleLimit = PAGE_SIZE;
+        applyFilters();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!container.contains(e.target)) {
+        dropdown.setAttribute('hidden', '');
+      }
+    });
+  });
+
+  /* ---- Filter logic ---- */
   function applyFilters() {
     if (!form) return;
 
     const data = new FormData(form);
-    const q = String(data.get('q') ?? '')
-      .trim()
-      .toLowerCase();
+    const q = String(data.get('q') ?? '').trim().toLowerCase();
     const city = String(data.get('city') ?? '');
-    const neighborhood = String(data.get('neighborhood') ?? '');
-    const type = String(data.get('type') ?? '');
+    const neighborhoods = data.getAll('neighborhood').filter(Boolean);
+    const types = data.getAll('type').filter(Boolean);
     const bedrooms = Number(data.get('bedrooms') || 0);
     const priceMin = Number(data.get('priceMin') || 0);
     const priceMax = Number(data.get('priceMax') || 0);
@@ -174,8 +211,8 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
       const matchesQuery =
         !q || title.includes(q) || itemNeighborhood.toLowerCase().includes(q) || itemCity.toLowerCase().includes(q);
       const matchesCity = !city || itemCity === city;
-      const matchesNeighborhood = !neighborhood || itemNeighborhood === neighborhood;
-      const matchesType = !type || itemType === type;
+      const matchesNeighborhood = neighborhoods.length === 0 || neighborhoods.includes(itemNeighborhood);
+      const matchesType = types.length === 0 || types.includes(itemType);
       const matchesBedrooms = !bedrooms || itemBedrooms >= bedrooms;
       const matchesPriceMin = !priceMin || itemPrice >= priceMin;
       const matchesPriceMax = !priceMax || itemPrice <= priceMax;
@@ -191,30 +228,82 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
         matchesPriceMax &&
         matchesArea;
 
-      item.toggleAttribute('hidden', !show);
+      item.dataset.filtered = show ? 'true' : 'false';
       if (show) visible += 1;
     }
 
-    if (countEl) {
-      countEl.textContent = `${visible} imóvel${visible === 1 ? '' : 'es'} encontrado${visible === 1 ? '' : 's'}`;
+    renderVisible();
+    updateCount(visible);
+  }
+
+  function renderVisible() {
+    const visibleItems = items.filter((item) => item.dataset.filtered === 'true');
+    let shown = 0;
+
+    for (const item of items) {
+      const filtered = item.dataset.filtered === 'true';
+      if (filtered && shown < visibleLimit) {
+        item.removeAttribute('hidden');
+        shown += 1;
+      } else {
+        item.setAttribute('hidden', '');
+      }
     }
 
+    const remaining = visibleItems.length - shown;
+    if (remaining > 0) {
+      const nextBatch = Math.min(remaining, PAGE_SIZE);
+      loadMoreBtn.textContent = `Carregar mais ${nextBatch} imóvel${nextBatch === 1 ? '' : 'es'}`;
+      loadMoreBtn.removeAttribute('hidden');
+    } else {
+      loadMoreBtn.setAttribute('hidden', '');
+    }
+  }
+
+  function updateCount(visible) {
+    const shown = items.filter((item) => !item.hasAttribute('hidden')).length;
+    if (countEl) {
+      countEl.textContent = `${visible} imóvel${visible === 1 ? '' : 'es'} encontrado${visible === 1 ? '' : 's'}${visible !== shown ? ` (exibindo ${shown})` : ''}`;
+    }
     emptyEl?.toggleAttribute('hidden', visible > 0);
     gridEl?.toggleAttribute('hidden', visible === 0);
   }
 
+  /* ---- Event listeners ---- */
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
+    visibleLimit = PAGE_SIZE;
     applyFilters();
   });
 
   form?.addEventListener('reset', () => {
+    document.querySelectorAll('[data-multi-select] input[type="checkbox"]').forEach((cb) => {
+      cb.checked = false;
+    });
+    document.querySelectorAll('[data-multi-select-trigger]').forEach((btn) => {
+      btn.textContent = 'Todos';
+    });
+    visibleLimit = PAGE_SIZE;
     window.setTimeout(applyFilters, 0);
   });
 
-  form?.querySelectorAll('select, input').forEach((field) => {
-    field.addEventListener('change', applyFilters);
+  form?.querySelectorAll('select, input[type="search"], input[type="number"]').forEach((field) => {
+    field.addEventListener('change', () => {
+      visibleLimit = PAGE_SIZE;
+      applyFilters();
+    });
   });
+
+  loadMoreBtn?.addEventListener('click', () => {
+    visibleLimit += PAGE_SIZE;
+    renderVisible();
+    const visibleItems = items.filter((item) => item.dataset.filtered === 'true');
+    updateCount(visibleItems.length);
+  });
+
+  /* ---- Init ---- */
+  items.forEach((item) => { item.dataset.filtered = 'true'; });
+  applyFilters();
 
   if (window.location.hash === '#filtros') {
     document.getElementById('filtros')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -268,7 +357,7 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
     grid-column: 1 / -1;
   }
 
-  .filters-form label {
+  .filters-form > label {
     display: grid;
     gap: var(--space-1);
     font-size: 0.875rem;
@@ -297,6 +386,86 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
     background: transparent;
   }
 
+  /* ---- Multi-select widget ---- */
+  .multi-select {
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .multi-select__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .multi-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font: inherit;
+    padding: var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-background);
+    cursor: pointer;
+    text-align: left;
+    color: var(--color-muted);
+  }
+
+  .multi-select__trigger::after {
+    content: '';
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    border: 2px solid currentColor;
+    border-top: 0;
+    border-left: 0;
+    transform: rotate(45deg);
+    margin-left: var(--space-1);
+    opacity: 0.5;
+    transition: transform 0.2s;
+  }
+
+  .multi-select__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    margin-top: 2px;
+    background: var(--color-white);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-soft);
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .multi-select__option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 0.875rem;
+    transition: background 0.15s;
+  }
+
+  .multi-select__option:hover {
+    background: var(--color-background);
+  }
+
+  .multi-select__option input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-primary);
+  }
+
+  /* ---- Grid ---- */
   .listings-grid {
     display: grid;
     gap: var(--space-4);
@@ -321,5 +490,12 @@ const { cities, neighborhoods, types } = getListingFilterOptions(listings);
     color: var(--color-muted);
     border: 1px dashed var(--color-line);
     background: var(--color-white);
+  }
+
+  /* ---- Pagination ---- */
+  .listings-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-6);
   }
 </style>
