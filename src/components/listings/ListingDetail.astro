@@ -71,7 +71,7 @@ const specs = [
               fetchpriority="high"
               decoding="async"
               data-gallery-main
-              onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+              onerror={`if(!this.dataset.fb){this.dataset.fb='1';this.src=this.src.replace(/\\.webp(\\?|$)/,'.jpg$1')}`}
             />
           </picture>
           {
@@ -139,7 +139,7 @@ const specs = [
                               decoding="async"
                               width="320"
                               height="180"
-                              onerror={`this.onerror=null;this.src='${fallbackImage}';`}
+                              onerror={`if(!this.dataset.fb){this.dataset.fb='1';this.src=this.src.replace(/\\.webp(\\?|$)/,'.jpg$1')}`}
                             />
                           </picture>
                         </button>
