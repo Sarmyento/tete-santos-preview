@@ -11,6 +11,8 @@ export interface Listing {
   state: string;
   price: string;
   priceValue: number;
+  condominioFee: string;
+  iptuFee: string;
   bedrooms: number;
   suites: number;
   area: number;
@@ -59,6 +61,8 @@ function parseListings(xml: string): Listing[] {
       state: getTag(block, 'state') || 'MG',
       price: getTag(block, 'price'),
       priceValue: Number(getTag(block, 'price_value')) || 0,
+      condominioFee: getTag(block, 'condominio_fee'),
+      iptuFee: getTag(block, 'iptu_fee'),
       bedrooms: Number(getTag(block, 'bedrooms')) || 0,
       suites: Number(getTag(block, 'suites')) || 0,
       area: Number(getTag(block, 'area')) || 0,

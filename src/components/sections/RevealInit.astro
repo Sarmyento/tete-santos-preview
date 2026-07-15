@@ -2,6 +2,7 @@
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (!prefersReduced) {
+    const isMobile = window.innerWidth < 640;
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -11,7 +12,7 @@
           }
         }
       },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      { threshold: isMobile ? 0.05 : 0.12, rootMargin: isMobile ? '0px 0px -10px 0px' : '0px 0px -40px 0px' }
     );
 
     document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => observer.observe(el));

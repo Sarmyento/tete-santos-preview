@@ -17,7 +17,7 @@
   --font-heading: "Fraunces", Georgia, serif;
   --font-body: "Spectral", Georgia, serif;
 
-  --text-h1: clamp(48px, 9vw, 104px);
+  --text-h1: clamp(38px, 7.2vw, 83px);
   --text-h2: clamp(30px, 5vw, 50px);
   --text-h3: 1.5rem;
   --text-body: 1rem;
