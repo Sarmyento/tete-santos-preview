@@ -19,25 +19,35 @@ const {
 } = Astro.props;
 
 const slides = [
-  { base: '/images/hero/tete-H1-hero-formal', alt: 'Tetê Santos em look formal no hero' },
-  { base: '/images/hero/tete-H2-hero-confiante', alt: 'Tetê Santos em pose confiante no hero' },
-  { base: '/images/hero/tete-H3-hero-smart-casual', alt: 'Tetê Santos em smart casual no hero' },
-  { base: '/images/hero/tete-H4-hero-crop', alt: 'Tetê Santos em enquadramento editorial no hero' },
+  {
+    base: '/images/hero/tete-H2-hero-confiante',
+    baseMobile: '/images/hero/tete-H5-mobile-vertical',
+    alt: 'Tetê Santos em pose confiante no hero',
+    altMobile: 'Tetê Santos em retrato vertical confiante',
+  },
+  {
+    base: '/images/hero/tete-H10-hero-biblioteca-v2',
+    baseMobile: '/images/hero/tete-H10-hero-biblioteca-mobile',
+    alt: 'Tetê Santos na biblioteca — consultoria imobiliária',
+    altMobile: 'Tetê Santos na biblioteca — versão vertical',
+  },
+  {
+    base: '/images/hero/tete-H11-hero-terraco-branco-v2',
+    baseMobile: '/images/hero/tete-H11-hero-terraco-branco-mobile',
+    alt: 'Tetê Santos no terraço — alto luxo minimalista',
+    altMobile: 'Tetê Santos no terraço — versão vertical',
+  },
 ].map((slide) => ({
   ...slide,
   webp: assetPath(`${slide.base}.webp`),
   webp1280: assetPath(`${slide.base}-1280.webp`),
   avif: assetPath(`${slide.base}.avif`),
   avif1280: assetPath(`${slide.base}-1280.avif`),
+  webpMobile: assetPath(`${slide.baseMobile}.webp`),
+  webp768Mobile: assetPath(`${slide.baseMobile}-768.webp`),
+  avifMobile: assetPath(`${slide.baseMobile}.avif`),
+  avif768Mobile: assetPath(`${slide.baseMobile}-768.avif`),
 }));
-
-const mobileSlide = {
-  alt: 'Tetê Santos em retrato vertical para mobile',
-  webp: assetPath('/images/hero/tete-H5-mobile-vertical.webp'),
-  webp768: assetPath('/images/hero/tete-H5-mobile-vertical-768.webp'),
-  avif: assetPath('/images/hero/tete-H5-mobile-vertical.avif'),
-  avif768: assetPath('/images/hero/tete-H5-mobile-vertical-768.avif'),
-};
 
 const first = slides[0];
 const deferredSlides = slides.slice(1);
@@ -50,13 +60,13 @@ const deferredSlides = slides.slice(1);
         <source
           media="(max-width: 767px)"
           type="image/avif"
-          srcset={`${mobileSlide.avif768} 768w, ${mobileSlide.avif} 1080w`}
+          srcset={`${first.avif768Mobile} 768w, ${first.avifMobile} 1080w`}
           sizes="100vw"
         />
         <source
           media="(max-width: 767px)"
           type="image/webp"
-          srcset={`${mobileSlide.webp768} 768w, ${mobileSlide.webp} 1080w`}
+          srcset={`${first.webp768Mobile} 768w, ${first.webpMobile} 1080w`}
           sizes="100vw"
         />
         <source
@@ -84,7 +94,7 @@ const deferredSlides = slides.slice(1);
   <script
     type="application/json"
     data-hero-deferred
-    set:html={JSON.stringify({ mobile: mobileSlide, slides: deferredSlides })}
+    set:html={JSON.stringify({ slides: deferredSlides })}
   />
   <div class="hero__overlay"></div>
   <div class="container hero__content">
@@ -106,14 +116,14 @@ const deferredSlides = slides.slice(1);
   const deferredNode = root?.querySelector('[data-hero-deferred]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function buildSlide(slide, mobile, index) {
+  function buildSlide(slide, index) {
     const el = document.createElement('div');
     el.className = `hero__slide hero__slide--${index + 1}`;
     el.setAttribute('data-hero-slide', '');
     const picture = document.createElement('picture');
     const sources = [
-      ['(max-width: 767px)', 'image/avif', `${mobile.avif768} 768w, ${mobile.avif} 1080w`],
-      ['(max-width: 767px)', 'image/webp', `${mobile.webp768} 768w, ${mobile.webp} 1080w`],
+      ['(max-width: 767px)', 'image/avif', `${slide.avif768Mobile} 768w, ${slide.avifMobile} 1080w`],
+      ['(max-width: 767px)', 'image/webp', `${slide.webp768Mobile} 768w, ${slide.webpMobile} 1080w`],
       [null, 'image/avif', `${slide.avif1280} 1280w, ${slide.avif} 1920w`],
       [null, 'image/webp', `${slide.webp1280} 1280w, ${slide.webp} 1920w`],
     ];
@@ -153,10 +163,9 @@ const deferredSlides = slides.slice(1);
     try {
       const payload = JSON.parse(deferredNode.textContent || '{}');
       const deferred = Array.isArray(payload.slides) ? payload.slides : [];
-      const mobile = payload.mobile;
-      if (!mobile || !deferred.length) return;
+      if (!deferred.length) return;
       deferred.forEach((slide, i) => {
-        slidesRoot.appendChild(buildSlide(slide, mobile, i + 1));
+        slidesRoot.appendChild(buildSlide(slide, i + 1));
       });
       deferredNode.remove();
       startRotation();
@@ -231,11 +240,6 @@ const deferredSlides = slides.slice(1);
   .hero__slide--3 img {
     object-position: center 18%;
     transform-origin: center 20%;
-  }
-
-  .hero__slide--4 img {
-    object-position: center 22%;
-    transform-origin: center 24%;
   }
 
   .hero__slide:not(.hero__slide--active) img {

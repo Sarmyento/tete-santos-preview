@@ -23,7 +23,7 @@ interface Props {
 const {
   title = `${site.name} | ${site.tagline}`,
   description = `${site.tagline} ${site.taglineSecondary}. Atuação consultiva em imóveis de alto luxo em ${site.region}.`,
-  image = assetPath('/images/hero/tete-H1-hero-formal.webp'),
+  image = assetPath('/images/hero/tete-H2-hero-confiante.webp'),
   noindex = false,
   jsonLd,
   headerOverlay = false,
@@ -43,7 +43,7 @@ const pageLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const allLd = [...baseLd, ...pageLd];
 
 const lcpMobileAvif = assetPath('/images/hero/tete-H5-mobile-vertical-768.avif');
-const lcpDesktopAvif = assetPath('/images/hero/tete-H1-hero-formal-1280.avif');
+const lcpDesktopAvif = assetPath('/images/hero/tete-H2-hero-confiante-1280.avif');
 ---
 
 <!doctype html>
