@@ -4,11 +4,13 @@ import RevealInit from '../components/sections/RevealInit.astro';
 import CtaBand from '../components/sections/CtaBand.astro';
 import { site } from '../config/site';
 import { assetPath } from '../lib/paths';
+
+const regionShort = 'Centro-Sul de Belo Horizonte e Nova Lima';
 ---
 
 <BaseLayout
   title={`Sobre | ${site.name}`}
-  description={`Conheça ${site.name}, corretora de imóveis de alto luxo em ${site.region}.`}
+  description={`Conheça ${site.name}, corretora de imóveis de alto luxo em ${regionShort}.`}
 >
   <section class="page-hero section--dark section">
     <div class="container page-hero__inner reveal">
@@ -28,7 +30,7 @@ import { assetPath } from '../lib/paths';
       <div>
         <h2>Quem é Tetê Santos</h2>
         <p>
-          Corretora especializada em imóveis de alto luxo no {site.region}. Minha abordagem
+          Corretora especializada em imóveis de alto luxo no {regionShort}. Minha abordagem
           combina leitura de mercado, sensibilidade estética e proximidade humana.
         </p>
         <p>
@@ -44,12 +46,46 @@ import { assetPath } from '../lib/paths';
     </div>
   </section>
 
+  <section class="section reveal">
+    <div class="container about-partnership">
+      <div>
+        <p class="eyebrow">Parceria</p>
+        <h2>Parceria com Marco Marques</h2>
+        <p>
+          Exclusividade também se constrói em rede. Por isso caminho ao lado de Marco Marques,
+          corretor reconhecido pela curadoria de oportunidades <em>off-market</em> no Centro-Sul
+          de Belo Horizonte e em Nova Lima — imóveis que raramente chegam às plataformas e
+          circulam pela confiança de quem tem olho clínico e tempo de mercado.
+        </p>
+        <p>
+          Essa parceria amplia o que posso oferecer a você: mais acesso a oportunidades
+          qualificadas, a mesma condução atenta e sem pressa, e a segurança de dois profissionais
+          que colocam a relação de confiança acima de qualquer transação.
+        </p>
+      </div>
+      <div class="about-partnership__video">
+        <video
+          controls
+          preload="metadata"
+          playsinline
+          poster="/videos/parceria-marco-marques-poster.jpg"
+          aria-label="Vídeo: Tetê Santos e Marco Marques sobre a parceria."
+          width="340"
+          height="604"
+        >
+          <source src="/videos/parceria-marco-marques-web.mp4" type="video/mp4" />
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+    </div>
+  </section>
+
   <section class="section section--tight reveal">
     <div class="container about-values">
       <div>
         <p class="eyebrow">Região</p>
         <h2>{site.taglineSecondary}</h2>
-        <p>{site.region}</p>
+        <p>{regionShort}</p>
       </div>
       <div>
         <p class="eyebrow">Valores</p>
@@ -121,5 +157,30 @@ import { assetPath } from '../lib/paths';
 
   .about-values li + li {
     margin-top: var(--space-1);
+  }
+
+  .about-partnership {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (min-width: 768px) {
+    .about-partnership {
+      grid-template-columns: 1fr 340px;
+    }
+  }
+
+  .about-partnership__video {
+    display: flex;
+    justify-content: center;
+  }
+
+  .about-partnership__video video {
+    max-width: 340px;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-card);
   }
 </style>
