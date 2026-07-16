@@ -5,6 +5,7 @@
   "private": true,
   "description": "Site Tetê Santos · Heritage Real · P4 scaffold",
   "scripts": {
+    "prepare": "node scripts/setup-git-hooks.mjs",
     "dev": "astro dev",
     "optimize:static": "node scripts/optimize-static-images.mjs",
     "prebuild": "node scripts/optimize-static-images.mjs && node scripts/fetch-listings.mjs",

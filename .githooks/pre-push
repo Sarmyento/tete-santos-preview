@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Bloqueia push cujo destino seja refs/heads/main (GitHub Free sem branch protection).
+# Emergencia documentada: ALLOW_MAIN_PUSH=1 git push ...
+set -euo pipefail
+
+if [[ "${ALLOW_MAIN_PUSH:-}" == "1" ]]; then
+  echo "pre-push: ALLOW_MAIN_PUSH=1 — push para main permitido (emergencia)."
+  exit 0
+fi
+
+blocked=0
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  if [[ "${remote_ref}" == "refs/heads/main" ]]; then
+    blocked=1
+    break
+  fi
+done
+
+if [[ "${blocked}" -eq 1 ]]; then
+  cat >&2 <<'EOF'
+pre-push: BLOQUEADO — push direto em main e proibido.
+
+NUNCA dar git push direto em main. Todo commit vai por branch + PR,
+mesmo para fixes pequenos ou de tipagem. Isso vale tambem para o Cursor/agente.
+
+Incidente de referencia: commit 71c7b6b (exemplo do que nao fazer).
+
+Fluxo: git checkout -b ... -> commit -> git push -u origin HEAD -> gh pr create
+
+Emergencia documentada:
+  ALLOW_MAIN_PUSH=1 git push origin main
+
+Ver: docs/ESTADO-CORRECAO-AUDITORIA.md (Convencoes de trabalho)
+EOF
+  exit 1
+fi
+
+exit 0

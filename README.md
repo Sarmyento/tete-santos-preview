@@ -2,6 +2,25 @@
 
 Preview estático do site Tetê Santos (Heritage Real · P4) para validação da cliente.
 
+## Convenções de trabalho
+
+> **NUNCA dar `git push` direto em `main`.**  
+> Todo commit vai por **branch + PR**, mesmo para fixes pequenos ou de tipagem.  
+> Isso vale também para o **Cursor/agente**.
+
+Incidente de referência: commit `71c7b6b` (push direto em `main` — exemplo do que **não** fazer).  
+Detalhes: [`docs/ESTADO-CORRECAO-AUDITORIA.md`](docs/ESTADO-CORRECAO-AUDITORIA.md) § Convenções de trabalho.
+
+### Hook local (bloqueio de push em `main`)
+
+Uma vez por clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Ou `npm install` (script `prepare` configura automaticamente). Emergência: `ALLOW_MAIN_PUSH=1 git push origin main`.
+
 ## Preview online
 
 **URL:** https://sarmyento.github.io/tete-santos-preview/
@@ -37,7 +56,7 @@ PUBLIC_DEPLOY_TARGET=github-pages npm run build
 
 ## Deploy
 
-Push na branch `main` publica o build na branch `gh-pages`.
+Merge de PR em `main` (nunca push direto) publica o build na branch `gh-pages`.
 
 **Ativar preview (uma vez):** GitHub → repo → Settings → Pages → Source: **Deploy from a branch** → branch `gh-pages` / `/ (root)`.
 
