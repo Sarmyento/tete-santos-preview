@@ -14,7 +14,7 @@ export const site = {
     message: 'Olá Tetê, gostaria de agendar uma visita.',
   },
   contact: {
-    email: 'contato@tetesantos.com.br',
+    email: 'tecasantos26@hotmail.com',
     phone: '(31) 99638-3100',
   },
   social: {
@@ -22,7 +22,7 @@ export const site = {
     facebook: '',
     linkedin: '',
   },
-  region: 'Centro-Sul de Belo Horizonte (Sion, Lourdes, Funcionários) e Nova Lima',
+  region: 'Centro-Sul de Belo Horizonte e Nova Lima',
   services: ['Compra', 'Venda', 'Avaliação', 'Captação'] as const,
 } as const;
 
