@@ -4,6 +4,29 @@ import ServicesGrid from '../components/sections/ServicesGrid.astro';
 import CtaBand from '../components/sections/CtaBand.astro';
 import RevealInit from '../components/sections/RevealInit.astro';
 import { site } from '../config/site';
+
+const steps = [
+  {
+    title: 'Diagnóstico',
+    text: 'Diagnóstico consultivo do objetivo e do perfil do imóvel ou da busca.',
+    icon: 'compass',
+  },
+  {
+    title: 'Estratégia',
+    text: 'Estratégia de posicionamento, precificação e narrativa premium.',
+    icon: 'map',
+  },
+  {
+    title: 'Curadoria',
+    text: 'Curadoria de visitas, materiais e condução das negociações.',
+    icon: 'key',
+  },
+  {
+    title: 'Fechamento',
+    text: 'Acompanhamento próximo até a assinatura com segurança jurídica.',
+    icon: 'seal',
+  },
+];
 ---
 
 <BaseLayout
@@ -23,15 +46,65 @@ import { site } from '../config/site';
   <ServicesGrid compact={true} />
 
   <section class="section reveal">
-    <div class="container container--narrow process">
-      <p class="eyebrow">Como funciona</p>
-      <h2>Um processo claro, do primeiro contato ao fechamento</h2>
-      <ol>
-        <li>Diagnóstico consultivo do objetivo e do perfil do imóvel ou da busca.</li>
-        <li>Estratégia de posicionamento, precificação e narrativa premium.</li>
-        <li>Curadoria de visitas, materiais e condução das negociações.</li>
-        <li>Acompanhamento próximo até a assinatura com segurança jurídica.</li>
-      </ol>
+    <div class="container">
+      <div class="section-header process-header">
+        <p class="eyebrow">Como funciona</p>
+        <h2>Um processo claro, do primeiro contato ao fechamento</h2>
+      </div>
+      <div class="process-grid reveal-stagger" role="list">
+        {
+          steps.map((step, index) => (
+            <article class="process-card" role="listitem">
+              <span class="process-card__icon" aria-hidden="true" data-icon={step.icon}>
+                {step.icon === 'compass' && (
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.25" />
+                    <path d="M16 8v2M16 22v2M8 16h2M22 16h2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                    <path d="m12.5 19.5 8-7-2.5 9.5-5.5-2.5Z" fill="currentColor" />
+                  </svg>
+                )}
+                {step.icon === 'map' && (
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <path
+                      d="M6 8.5 12.5 6l7 3.5L26 7v16.5L19.5 26l-7-3.5L6 25V8.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.25"
+                      stroke-linejoin="round"
+                    />
+                    <path d="M12.5 6v16.5M19.5 9.5V26" stroke="currentColor" stroke-width="1.25" />
+                  </svg>
+                )}
+                {step.icon === 'key' && (
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <circle cx="12" cy="14" r="5.5" stroke="currentColor" stroke-width="1.25" />
+                    <path
+                      d="M16.5 16.5 26 26m0 0h-3.5M26 26v-3.5"
+                      stroke="currentColor"
+                      stroke-width="1.25"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                )}
+                {step.icon === 'seal' && (
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <path
+                      d="M16 5.5 18.4 10l4.9.5-3.7 3.4 1.1 4.8L16 16.8l-4.7 1.9 1.1-4.8-3.7-3.4 4.9-.5L16 5.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.25"
+                      stroke-linejoin="round"
+                    />
+                    <path d="M11.5 22.5h9M13 25h6" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+                  </svg>
+                )}
+              </span>
+              <span class="motion-line motion-line--wide" aria-hidden="true"></span>
+              <p class="process-card__step">Etapa {String(index + 1).padStart(2, '0')}</p>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </section>
 
@@ -53,11 +126,66 @@ import { site } from '../config/site';
     max-width: 52ch;
   }
 
-  .process ol {
-    margin: var(--space-4) 0 0;
-    padding-left: 1.2rem;
-    color: var(--color-muted);
+  .process-header {
+    max-width: 760px;
+  }
+
+  .process-grid {
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .process-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .process-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .process-card {
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    background: var(--color-white);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .process-card__icon {
+    display: inline-flex;
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-accent);
+    margin-bottom: var(--space-2);
+  }
+
+  .process-card__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .process-card .motion-line {
+    margin-bottom: var(--space-3);
+  }
+
+  .process-card__step {
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent-dark);
+    margin-bottom: var(--space-1);
+  }
+
+  .process-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .process-card p:last-child {
+    color: var(--color-muted);
+    margin: 0;
   }
 </style>

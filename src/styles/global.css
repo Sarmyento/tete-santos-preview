@@ -176,6 +176,14 @@ p {
   color: var(--color-muted);
 }
 
+.section--dark .section-header p {
+  color: var(--color-on-primary-muted);
+}
+
+.section--dark .eyebrow {
+  color: var(--color-accent);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

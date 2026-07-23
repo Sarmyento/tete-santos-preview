@@ -14,12 +14,14 @@ const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waBase)}`;
 >
   <section class="section page-contact">
     <div class="container contact-grid reveal">
-      <div>
+      <div class="contact-intro">
         <p class="eyebrow">Contato</p>
-        <h1>Vamos conversar sobre o seu próximo imóvel</h1>
-        <p>
-          Preencha o formulário ou fale direto no WhatsApp. Resposta consultiva, sem pressão.
-        </p>
+        <h1>Fale com a Tetê</h1>
+        <ul class="contact-promise">
+          <li>Nossa equipe entrará em contato pelo WhatsApp para entender sua necessidade.</li>
+          <li>Você receberá um atendimento consultivo e personalizado.</li>
+          <li>Após o envio, retornaremos em até 24 horas para dar continuidade ao atendimento.</li>
+        </ul>
         <ul class="contact-list">
           <li>
             <strong>WhatsApp</strong>
@@ -39,21 +41,23 @@ const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waBase)}`;
       </div>
 
       <form class="form" id="contact-form">
-        <label>
-          Nome
-          <input type="text" name="nome" required autocomplete="name" />
-        </label>
+        <div class="form__row">
+          <label>
+            Nome
+            <input type="text" name="nome" required autocomplete="name" />
+          </label>
+          <label>
+            Telefone
+            <input type="tel" name="telefone" autocomplete="tel" />
+          </label>
+        </div>
         <label>
           E-mail
           <input type="email" name="email" required autocomplete="email" />
         </label>
         <label>
-          Telefone
-          <input type="tel" name="telefone" autocomplete="tel" />
-        </label>
-        <label>
           Mensagem
-          <textarea name="msg" rows="5" required></textarea>
+          <textarea name="msg" rows="3" required></textarea>
         </label>
         <button class="btn btn-primary btn-motion" type="submit">Enviar pelo WhatsApp</button>
       </form>
@@ -80,31 +84,63 @@ const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waBase)}`;
 <style>
   .page-contact {
     padding-top: calc(var(--header-height) + var(--space-6));
+    padding-bottom: var(--space-8);
   }
 
   .contact-grid {
     display: grid;
-    gap: var(--space-8);
+    gap: var(--space-6);
     align-items: start;
   }
 
   @media (min-width: 900px) {
     .contact-grid {
       grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
     }
+  }
+
+  .contact-intro h1 {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    margin-bottom: var(--space-3);
+  }
+
+  .contact-promise {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    color: var(--color-muted);
+    max-width: 48ch;
+  }
+
+  .contact-promise li {
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .contact-promise li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 0.4rem;
+    height: 1px;
+    background: var(--color-accent);
   }
 
   .contact-list {
     list-style: none;
-    margin: var(--space-4) 0 0;
+    margin: 0;
     padding: 0;
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   .contact-list li {
     display: grid;
-    gap: 0.25rem;
+    gap: 0.15rem;
   }
 
   .contact-list strong {
@@ -125,26 +161,47 @@ const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waBase)}`;
 
   .form {
     display: grid;
-    gap: var(--space-3);
-    padding: var(--space-4);
+    gap: var(--space-2);
+    padding: var(--space-3);
     background: var(--color-white);
     border: 1px solid var(--color-line);
     box-shadow: var(--shadow-soft);
   }
 
+  .form__row {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  @media (min-width: 560px) {
+    .form__row {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+  }
+
   label {
     display: grid;
-    gap: var(--space-1);
+    gap: 0.35rem;
     font-weight: 400;
+    font-size: 0.95rem;
   }
 
   input,
   textarea {
     font: inherit;
-    padding: var(--space-2);
+    padding: 0.65rem 0.75rem;
     border: 1px solid var(--color-line);
     border-radius: var(--radius-sm);
     background: var(--color-background);
   }
 
+  textarea {
+    resize: vertical;
+    min-height: 4.5rem;
+  }
+
+  .form .btn {
+    margin-top: var(--space-1);
+    width: 100%;
+  }
 </style>

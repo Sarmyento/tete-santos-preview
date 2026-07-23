@@ -10,6 +10,10 @@
   --color-line: #e2d8c9;
   --color-white: #ffffff;
 
+  /* Texto sobre bordô (section--dark): osso com leve mistura — contraste AA */
+  --color-on-primary: var(--color-background);
+  --color-on-primary-muted: color-mix(in srgb, var(--color-background) 92%, var(--color-accent) 8%);
+
   --color-neutral-900: var(--color-ink);
   --color-neutral-100: var(--color-background);
   --color-neutral-500: var(--color-muted);
