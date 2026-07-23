@@ -18,24 +18,25 @@ const {
   ctaHref = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`,
 } = Astro.props;
 
+/** Rotação aprovada Tetê 23/07/2026: H8 (ela) + H17 aérea + H18 sala. H2/H10/H11 fora do slideshow (arquivos mantidos em public/images/hero). */
 const slides = [
   {
-    base: '/images/hero/tete-H2-hero-confiante',
-    baseMobile: '/images/hero/tete-H5-mobile-vertical',
-    alt: 'Tetê Santos em pose confiante no hero',
-    altMobile: 'Tetê Santos em retrato vertical confiante',
-  },
-  {
-    base: '/images/hero/tete-H10-hero-biblioteca-v2',
-    baseMobile: '/images/hero/tete-H10-hero-biblioteca-mobile',
-    alt: 'Tetê Santos na biblioteca — consultoria imobiliária',
-    altMobile: 'Tetê Santos na biblioteca — versão vertical',
-  },
-  {
     base: '/images/hero/tete-H8-hero-consultoria-bordo',
-    baseMobile: '/images/hero/tete-H11-hero-terraco-branco-mobile',
-    alt: 'Tetê Santos em consultoria — living de alto padrão',
-    altMobile: 'Tetê Santos no terraço — versão vertical',
+    baseMobile: '/images/hero/tete-H8-hero-consultoria-bordo-mobile',
+    alt: 'Tetê Santos em consultoria, casaco bordô, living de alto padrão',
+    altMobile: 'Tetê Santos em consultoria, casaco bordô — versão vertical',
+  },
+  {
+    base: '/images/hero/tete-H17-hero-aerea-drone',
+    baseMobile: '/images/hero/tete-H17-hero-aerea-drone-mobile',
+    alt: 'Vista aérea ao crepúsculo de residência de alto padrão em Belo Horizonte',
+    altMobile: 'Vista aérea ao crepúsculo de residência de alto padrão — versão vertical',
+  },
+  {
+    base: '/images/hero/tete-H18-hero-sala-vista',
+    baseMobile: '/images/hero/tete-H18-hero-sala-vista-mobile',
+    alt: 'Sala de estar de alto luxo com vista panorâmica ao entardecer',
+    altMobile: 'Sala de estar de alto luxo com vista panorâmica — versão vertical',
   },
 ].map((slide) => ({
   ...slide,
@@ -227,19 +228,22 @@ const deferredSlides = slides.slice(1);
     animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
   }
 
+  /* H8: face/casaco — enquadra um pouco acima do centro */
   .hero__slide--1 img {
-    object-position: center 12%;
-    transform-origin: center 14%;
+    object-position: center 14%;
+    transform-origin: center 16%;
   }
 
+  /* H17: aérea — casa no meio, céu escuro no topo */
   .hero__slide--2 img {
-    object-position: center 15%;
-    transform-origin: center 17%;
+    object-position: center 42%;
+    transform-origin: center 40%;
   }
 
+  /* H18: sala com vista — horizonte da vidraça no terço médio */
   .hero__slide--3 img {
-    object-position: center 18%;
-    transform-origin: center 20%;
+    object-position: center 28%;
+    transform-origin: center 30%;
   }
 
   .hero__slide:not(.hero__slide--active) img {

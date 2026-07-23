@@ -23,7 +23,7 @@ interface Props {
 const {
   title = `${site.name} | ${site.tagline}`,
   description = `${site.tagline} ${site.taglineSecondary}. Atuação consultiva em imóveis de alto luxo em ${site.region}.`,
-  image = assetPath('/images/hero/tete-H2-hero-confiante.webp'),
+  image = assetPath('/images/hero/tete-H8-hero-consultoria-bordo.webp'),
   noindex = false,
   jsonLd,
   headerOverlay = false,
@@ -42,8 +42,11 @@ const baseLd = [
 const pageLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const allLd = [...baseLd, ...pageLd];
 
-const lcpMobileAvif = assetPath('/images/hero/tete-H5-mobile-vertical-768.avif');
-const lcpDesktopAvif = assetPath('/images/hero/tete-H2-hero-confiante-1280.avif');
+/** LCP = 1º slide do HeroSlideshow (H8). Preload por breakpoint + imagesrcset. */
+const lcpMobileAvif768 = assetPath('/images/hero/tete-H8-hero-consultoria-bordo-mobile-768.avif');
+const lcpMobileAvif = assetPath('/images/hero/tete-H8-hero-consultoria-bordo-mobile.avif');
+const lcpDesktopAvif1280 = assetPath('/images/hero/tete-H8-hero-consultoria-bordo-1280.avif');
+const lcpDesktopAvif = assetPath('/images/hero/tete-H8-hero-consultoria-bordo.avif');
 ---
 
 <!doctype html>
@@ -82,7 +85,8 @@ const lcpDesktopAvif = assetPath('/images/hero/tete-H2-hero-confiante-1280.avif'
             rel="preload"
             as="image"
             type="image/avif"
-            href={lcpMobileAvif}
+            imagesrcset={`${lcpMobileAvif768} 768w, ${lcpMobileAvif} 1080w`}
+            imagesizes="100vw"
             media="(max-width: 767px)"
             fetchpriority="high"
           />
@@ -90,7 +94,8 @@ const lcpDesktopAvif = assetPath('/images/hero/tete-H2-hero-confiante-1280.avif'
             rel="preload"
             as="image"
             type="image/avif"
-            href={lcpDesktopAvif}
+            imagesrcset={`${lcpDesktopAvif1280} 1280w, ${lcpDesktopAvif} 1920w`}
+            imagesizes="100vw"
             media="(min-width: 768px)"
             fetchpriority="high"
           />
