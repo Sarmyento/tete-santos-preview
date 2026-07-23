@@ -1,0 +1,21 @@
+# Tetê Santos
+
+> Consultoria imobiliária de alto luxo em Belo Horizonte e Nova Lima. Atuação em compra, venda, avaliação e captação de patrimônio com discrição e curadoria.
+
+## Páginas principais
+
+- [Início](https://tetesantos.com.br/)
+- [Imóveis](https://tetesantos.com.br/imoveis)
+- [Sobre](https://tetesantos.com.br/sobre)
+- [Serviços](https://tetesantos.com.br/servicos)
+- [Contato](https://tetesantos.com.br/contato)
+
+## Contato
+
+- WhatsApp: https://wa.me/5531996383100
+- E-mail: contato@tetesantos.com.br
+- Instagram: https://www.instagram.com/corretoratetesantos
+
+## Sitemap
+
+- [sitemap-index.xml](https://tetesantos.com.br/sitemap-index.xml)
