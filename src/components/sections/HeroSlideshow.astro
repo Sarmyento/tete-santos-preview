@@ -18,7 +18,7 @@ const {
   ctaHref = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(site.whatsapp.message)}`,
 } = Astro.props;
 
-/** Rotação aprovada Tetê 23/07/2026: H8 (ela) + H17 aérea + H18 sala. H2/H10/H11 fora do slideshow (arquivos mantidos em public/images/hero). */
+/** Rotação home: H8 + H17 edited + H18 dia. Header desktop opaco. */
 const slides = [
   {
     base: '/images/hero/tete-H8-hero-consultoria-bordo',
@@ -29,13 +29,13 @@ const slides = [
   {
     base: '/images/hero/tete-H17-hero-aerea-drone',
     baseMobile: '/images/hero/tete-H17-hero-aerea-drone-mobile',
-    alt: 'Vista aérea ao crepúsculo de residência de alto padrão em Belo Horizonte',
-    altMobile: 'Vista aérea ao crepúsculo de residência de alto padrão — versão vertical',
+    alt: 'Vista aérea de residência de alto padrão em Belo Horizonte',
+    altMobile: 'Vista aérea de residência de alto padrão — versão vertical',
   },
   {
     base: '/images/hero/tete-H18-hero-sala-vista',
     baseMobile: '/images/hero/tete-H18-hero-sala-vista-mobile',
-    alt: 'Sala de estar de alto luxo com vista panorâmica ao entardecer',
+    alt: 'Sala de estar de alto luxo com vista panorâmica à luz do dia',
     altMobile: 'Sala de estar de alto luxo com vista panorâmica — versão vertical',
   },
 ].map((slide) => ({
@@ -199,6 +199,21 @@ const deferredSlides = slides.slice(1);
   .hero__slides {
     position: absolute;
     inset: 0;
+    overflow: hidden;
+  }
+
+  /* Desktop: header opaco — slides abaixo do menu.
+     page-overlay-header puxa o .hero em -header-height, então top precisa
+     compensar 2× para o frame começar na base do header (não atrás dele). */
+  @media (min-width: 961px) {
+    .hero {
+      background: var(--color-primary);
+    }
+
+    .hero__slides {
+      /* Compensa page-overlay-header (-header) + folga bordô (~24px) acima da H8. */
+      top: calc(var(--header-height) * 2 + 24px);
+    }
   }
 
   .hero__slide {
@@ -228,22 +243,22 @@ const deferredSlides = slides.slice(1);
     animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
   }
 
-  /* H8: face/casaco — enquadra um pouco acima do centro */
+  /* H8: face/casaco — ancora no topo do master (pouco headroom na foto). */
   .hero__slide--1 img {
-    object-position: center 14%;
-    transform-origin: center 16%;
+    object-position: 68% 0%;
+    transform-origin: 68% 10%;
   }
 
-  /* H17: aérea — casa no meio, céu escuro no topo */
+  /* H17: aérea — casa no meio do quadro */
   .hero__slide--2 img {
     object-position: center 42%;
     transform-origin: center 40%;
   }
 
-  /* H18: sala com vista — horizonte da vidraça no terço médio */
+  /* H18: sala com vista — focal no sofá/tapete/vidraça (não no teto). */
   .hero__slide--3 img {
-    object-position: center 28%;
-    transform-origin: center 30%;
+    object-position: center 78%;
+    transform-origin: center 72%;
   }
 
   .hero__slide:not(.hero__slide--active) img {
@@ -264,7 +279,7 @@ const deferredSlides = slides.slice(1);
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgb(62 25 35 / 0.28) 0%, rgb(62 25 35 / 0.1) 32%, rgb(62 25 35 / 0.72) 100%),
+      linear-gradient(180deg, rgb(62 25 35 / 0.18) 0%, rgb(62 25 35 / 0.08) 28%, rgb(62 25 35 / 0.72) 100%),
       linear-gradient(90deg, rgb(36 26 27 / 0.5) 0%, transparent 55%);
     z-index: 2;
   }
@@ -277,7 +292,9 @@ const deferredSlides = slides.slice(1);
   }
 
   .hero__eyebrow {
-    color: var(--color-accent);
+    /* Latão (#C2A26B) some no hero claro (H17/H18); osso mantém paleta e AA no overlay. */
+    color: var(--color-background);
+    text-shadow: 0 1px 2px rgb(36 26 27 / 0.45);
   }
 
   .hero h1 {

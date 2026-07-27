@@ -120,6 +120,17 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
     box-shadow: var(--shadow-soft);
   }
 
+  /* Desktop (≥961px): home sempre opaco bordô — legibilidade sem depender do topo da foto. */
+  @media (min-width: 961px) {
+    .header--overlay,
+    .header--overlay.header--scrolled {
+      background: var(--color-primary);
+      backdrop-filter: none;
+      border-bottom-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
+      box-shadow: none;
+    }
+  }
+
   .header__inner {
     display: flex;
     align-items: center;
@@ -149,6 +160,7 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
     display: none;
   }
 
+  /* Mobile overlay no topo: logo clara sobre a foto; após scroll → logo dark no osso. */
   .header--overlay:not(.header--scrolled) .logo :global(.logo__light) {
     display: none;
   }
@@ -161,6 +173,20 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
   .header--overlay.header--scrolled .logo :global(.logo__light),
   .header--scrolled .logo :global(.logo__light) {
     height: clamp(62px, 7.8vw, 83px);
+  }
+
+  /* Desktop overlay: logo clara sempre (fundo bordô fixo). */
+  @media (min-width: 961px) {
+    .header--overlay .logo :global(.logo__light),
+    .header--overlay.header--scrolled .logo :global(.logo__light) {
+      display: none;
+    }
+
+    .header--overlay .logo :global(.logo__hero),
+    .header--overlay.header--scrolled .logo :global(.logo__hero) {
+      display: block;
+      height: clamp(62px, 7.8vw, 83px);
+    }
   }
 
   .nav {
@@ -191,6 +217,20 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
   .header--overlay:not(.header--scrolled) .nav a:hover,
   .header--overlay:not(.header--scrolled) .nav a[aria-current='page'] {
     color: var(--color-accent);
+  }
+
+  @media (min-width: 961px) {
+    .header--overlay .nav a,
+    .header--overlay.header--scrolled .nav a {
+      color: var(--color-background);
+    }
+
+    .header--overlay .nav a:hover,
+    .header--overlay .nav a[aria-current='page'],
+    .header--overlay.header--scrolled .nav a:hover,
+    .header--overlay.header--scrolled .nav a[aria-current='page'] {
+      color: var(--color-accent);
+    }
   }
 
   .header__cta {
