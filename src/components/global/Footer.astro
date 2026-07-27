@@ -15,6 +15,7 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
       </a>
       <p class="footer__tagline">{site.tagline}</p>
       <p class="footer__region">{site.taglineSecondary}</p>
+      <p class="footer__creci">{site.creci}</p>
     </div>
     <div>
       <p class="footer__label">Navegação</p>
@@ -99,6 +100,13 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
   .footer__region {
     color: color-mix(in srgb, var(--color-background) 75%, transparent);
     font-size: 0.95rem;
+  }
+
+  .footer__creci {
+    margin-top: var(--space-2);
+    color: color-mix(in srgb, var(--color-background) 70%, transparent);
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
   }
 
   .footer__label {

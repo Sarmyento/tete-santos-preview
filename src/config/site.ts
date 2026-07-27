@@ -7,6 +7,7 @@ export const site = {
   brandLockup: 'E · Maison Déco',
   tagline: 'Exclusividade que permanece.',
   taglineSecondary: 'Imóveis de Luxo · Belo Horizonte',
+  creci: 'CRECI/MG 35.071',
   domain: 'https://tetesantos.com.br',
   locale: 'pt-BR',
   whatsapp: {

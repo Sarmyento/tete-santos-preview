@@ -243,10 +243,37 @@ const deferredSlides = slides.slice(1);
     animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
   }
 
-  /* H8: face/casaco — ancora no topo do master (pouco headroom na foto). */
-  .hero__slide--1 img {
-    object-position: 68% 0%;
-    transform-origin: 68% 10%;
+  /* H8: crop leve (~12%) ancorado à esquerda + object-position 0%
+     → desloca Tetê ao máximo à direita sem “zoom” agressivo. */
+  @media (min-width: 768px) {
+    .hero__slide--1 picture {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 112%;
+      height: 100%;
+    }
+
+    .hero__slide--1 img {
+      object-position: 0% 0%;
+      transform-origin: 0% 10%;
+      animation-name: heroKenBurnsH8;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .hero__slide--1 img {
+      object-position: 15% 10%;
+      transform-origin: 15% 12%;
+    }
+  }
+
+  @keyframes heroKenBurnsH8 {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.03);
+    }
   }
 
   /* H17: aérea — casa no meio do quadro */
