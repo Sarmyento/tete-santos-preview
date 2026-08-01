@@ -1,18 +1,41 @@
 ---
-/** GA4 / Meta: ativar via PUBLIC_GA4_ID no .env (Cloudflare Pages). */
-const ga4 = import.meta.env.PUBLIC_GA4_ID;
+/**
+ * GTM via domínio próprio (Stape sGTM): v1.tetesantos.com.br
+ * Pixel Meta fica no container GTM da agência — não hardcodar no site.
+ * GA4 legado opcional via PUBLIC_GA4_ID (evitar se a agência já dispara GA4 no GTM).
+ */
+const GTM_ID = 'GTM-MT4VG7GP';
+const GTM_HOST = 'https://v1.tetesantos.com.br';
+const ga4 = import.meta.env.PUBLIC_GA4_ID as string | undefined;
 ---
 
-{ga4 && (
-  <>
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}></script>
-    <script is:inline define:vars={{ ga4 }}>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', ga4);
-    </script>
-  </>
-)}
+<!-- Google Tag Manager -->
+<script is:inline define:vars={{ GTM_ID, GTM_HOST }}>
+  (function (w, d, s, l, i) {
+    w[l] = w[l] || [];
+    w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s),
+      dl = l != 'dataLayer' ? '&l=' + l : '';
+    j.async = true;
+    j.src = GTM_HOST + '/gtm.js?id=' + i + dl;
+    f.parentNode.insertBefore(j, f);
+  })(window, document, 'script', 'dataLayer', GTM_ID);
+</script>
+<!-- End Google Tag Manager -->
+
+{
+  ga4 && (
+    <>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}></script>
+      <script is:inline define:vars={{ ga4 }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', ga4);
+      </script>
+    </>
+  )
+}

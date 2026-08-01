@@ -1,0 +1,350 @@
+---
+import { site } from '../../config/site';
+import { sitePath } from '../../lib/paths';
+
+/** Access key pública do Web3Forms (alias do e-mail). Gerar em https://web3forms.com */
+const accessKey = (import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY as string | undefined) ?? '';
+const privacyHref = sitePath('/privacidade');
+const waNumber = site.whatsapp.number;
+---
+
+<dialog
+  id="wa-lead-modal"
+  class="wa-lead"
+  aria-labelledby="wa-lead-title"
+  data-wa-number={waNumber}
+  data-access-key={accessKey}
+>
+  <div class="wa-lead__panel">
+    <button type="button" class="wa-lead__close" data-wa-lead-close aria-label="Fechar">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    <p class="eyebrow">WhatsApp</p>
+    <h2 id="wa-lead-title">Antes de conversarmos</h2>
+    <p class="wa-lead__intro">
+      Deixe seus dados para a Tetê retornar com atendimento consultivo. Em seguida abrimos o WhatsApp.
+    </p>
+
+    <form class="wa-lead__form" id="wa-lead-form" novalidate>
+      <input type="checkbox" name="botcheck" class="wa-lead__honeypot" tabindex="-1" autocomplete="off" />
+
+      <label>
+        Nome
+        <input type="text" name="name" required autocomplete="name" maxlength="120" />
+      </label>
+
+      <label>
+        Telefone
+        <input type="tel" name="phone" required autocomplete="tel" maxlength="30" />
+      </label>
+
+      <label>
+        E-mail
+        <input type="email" name="email" required autocomplete="email" maxlength="160" />
+      </label>
+
+      <label class="wa-lead__consent">
+        <input type="checkbox" name="consent" required />
+        <span>
+          Aceito que meus dados sejam usados para contato e para fins de marketing.
+          <a href={privacyHref} target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+        </span>
+      </label>
+
+      <p class="wa-lead__error" id="wa-lead-error" hidden role="alert"></p>
+
+      <button class="btn btn-primary btn-motion wa-lead__submit" type="submit" id="wa-lead-submit">
+        Continuar para o WhatsApp
+      </button>
+
+      <p class="wa-lead__fallback" id="wa-lead-fallback" hidden>
+        <a href="#" data-wa-bypass>Continuar no WhatsApp mesmo assim</a>
+      </p>
+    </form>
+  </div>
+</dialog>
+
+<script>
+  (() => {
+    const modal = document.getElementById('wa-lead-modal');
+    const form = document.getElementById('wa-lead-form');
+    const errorEl = document.getElementById('wa-lead-error');
+    const fallbackEl = document.getElementById('wa-lead-fallback');
+    const submitBtn = document.getElementById('wa-lead-submit');
+    if (
+      !(modal instanceof HTMLDialogElement) ||
+      !(form instanceof HTMLFormElement) ||
+      !(errorEl instanceof HTMLElement) ||
+      !(fallbackEl instanceof HTMLElement) ||
+      !(submitBtn instanceof HTMLButtonElement)
+    ) {
+      return;
+    }
+
+    let pendingHref = '';
+
+    const closeModal = () => {
+      modal.close();
+    };
+
+    const buildDefaultWaUrl = () => {
+      const number = modal.dataset.waNumber || '';
+      return `https://wa.me/${number}`;
+    };
+
+    const openModal = (href) => {
+      pendingHref = href;
+      form.reset();
+      errorEl.hidden = true;
+      errorEl.textContent = '';
+      fallbackEl.hidden = true;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Continuar para o WhatsApp';
+      modal.showModal();
+      const first = form.querySelector('input[name="name"]');
+      if (first instanceof HTMLInputElement) first.focus();
+    };
+
+    const openWhatsApp = (href) => {
+      window.open(href || buildDefaultWaUrl(), '_blank', 'noopener,noreferrer');
+    };
+
+    const pushLeadEvent = () => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'generate_lead',
+        lead_source: 'popup_whatsapp',
+        page_path: window.location.pathname,
+      });
+    };
+
+    const showError = (message, showFallback) => {
+      errorEl.hidden = false;
+      errorEl.textContent = message;
+      fallbackEl.hidden = !showFallback;
+      if (showFallback) {
+        const link = fallbackEl.querySelector('[data-wa-bypass]');
+        if (link instanceof HTMLAnchorElement) {
+          link.href = pendingHref || buildDefaultWaUrl();
+        }
+      }
+    };
+
+    document.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        if (target.closest('[data-wa-bypass]')) {
+          closeModal();
+          return;
+        }
+
+        if (target.closest('[data-wa-lead-close]')) {
+          event.preventDefault();
+          closeModal();
+          return;
+        }
+
+        const anchor = target.closest('a[href*="wa.me"]');
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+        if (anchor.hasAttribute('data-wa-bypass')) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        openModal(anchor.href);
+      },
+      true,
+    );
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal();
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      errorEl.hidden = true;
+      fallbackEl.hidden = true;
+
+      const data = new FormData(form);
+      if (data.get('botcheck')) return;
+
+      const name = String(data.get('name') ?? '').trim();
+      const phone = String(data.get('phone') ?? '').trim();
+      const email = String(data.get('email') ?? '').trim();
+      const consent = data.get('consent') === 'on';
+
+      if (!name || !phone || !email || !consent) {
+        showError('Preencha todos os campos e aceite o uso dos dados.', false);
+        return;
+      }
+
+      const accessKey = modal.dataset.accessKey || '';
+      if (!accessKey) {
+        showError(
+          'Captura de lead ainda sem chave Web3Forms. Peça a chave à Sarmy ou continue pelo WhatsApp.',
+          true,
+        );
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando…';
+
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: `Lead WhatsApp — ${name}`,
+            from_name: 'Site Tetê Santos',
+            name,
+            email,
+            phone,
+            message: `Lead via popup WhatsApp\nTelefone: ${phone}\nPágina: ${window.location.href}`,
+            consent: 'Aceito contato e marketing',
+            lead_source: 'popup_whatsapp',
+          }),
+        });
+
+        const payload = await res.json().catch(() => null);
+        if (!res.ok || !payload || !payload.success) {
+          throw new Error((payload && payload.message) || 'Falha no envio');
+        }
+
+        pushLeadEvent();
+        closeModal();
+        openWhatsApp(pendingHref);
+      } catch {
+        showError(
+          'Não foi possível enviar seus dados agora. Tente de novo ou continue no WhatsApp.',
+          true,
+        );
+      } finally {
+        window.clearTimeout(timeout);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Continuar para o WhatsApp';
+      }
+    });
+  })();
+</script>
+
+<style>
+  .wa-lead {
+    border: none;
+    padding: 0;
+    max-width: min(28rem, calc(100vw - 2rem));
+    background: transparent;
+  }
+
+  .wa-lead::backdrop {
+    background: rgb(36 26 27 / 0.55);
+  }
+
+  .wa-lead__panel {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--color-white);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-soft);
+    color: var(--color-ink);
+  }
+
+  .wa-lead__close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .wa-lead__close:hover {
+    color: var(--color-primary);
+  }
+
+  .wa-lead__intro {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    margin: 0 0 var(--space-1);
+  }
+
+  .wa-lead__form {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .wa-lead__form label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+  }
+
+  .wa-lead__form input[type='text'],
+  .wa-lead__form input[type='tel'],
+  .wa-lead__form input[type='email'] {
+    font: inherit;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-background);
+  }
+
+  .wa-lead__consent {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.65rem;
+    font-size: 0.88rem;
+    color: var(--color-muted);
+  }
+
+  .wa-lead__consent input {
+    margin-top: 0.2rem;
+  }
+
+  .wa-lead__consent a {
+    color: var(--color-primary);
+  }
+
+  .wa-lead__honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+  }
+
+  .wa-lead__error {
+    margin: 0;
+    color: #8b1e2d;
+    font-size: 0.9rem;
+  }
+
+  .wa-lead__submit {
+    width: 100%;
+    margin-top: var(--space-1);
+  }
+
+  .wa-lead__fallback {
+    margin: 0;
+    text-align: center;
+    font-size: 0.88rem;
+  }
+
+  .wa-lead__fallback a {
+    color: var(--color-primary);
+  }
+</style>

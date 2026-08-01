@@ -37,6 +37,7 @@ jobs:
       - name: Build site
         env:
           LISTINGS_FEED_URL: ${{ secrets.LISTINGS_FEED_URL }}
+          PUBLIC_WEB3FORMS_ACCESS_KEY: ${{ secrets.PUBLIC_WEB3FORMS_ACCESS_KEY }}
         run: npm run build
 
       - name: Deploy to gh-pages branch
