@@ -98,8 +98,14 @@ const deferredSlides = slides.slice(1);
     set:html={JSON.stringify({ slides: deferredSlides })}
   />
   <div class="hero__overlay"></div>
-  <div class="container hero__content">
-    <p class="eyebrow hero__eyebrow">{eyebrow}</p>
+  <!-- Desktop: eyebrow na faixa bordô entre menu e foto. Mobile: fluxo no content. -->
+  <div class="hero__rail">
+    <div class="container">
+      <p class="eyebrow hero__eyebrow">{eyebrow}</p>
+    </div>
+  </div>
+  <div class="hero__content">
+    <p class="eyebrow hero__eyebrow hero__eyebrow--flow">{eyebrow}</p>
     <h1>{title}</h1>
     <p class="hero__subtitle">{subtitle}</p>
     <div class="hero__actions">
@@ -187,6 +193,8 @@ const deferredSlides = slides.slice(1);
 
 <style is:global>
   .hero {
+    /* Faixa bordô visível entre header e foto (cabe eyebrow com folga). */
+    --hero-band: 64px;
     position: relative;
     min-height: min(92vh, 920px);
     display: grid;
@@ -203,16 +211,15 @@ const deferredSlides = slides.slice(1);
   }
 
   /* Desktop: header opaco — slides abaixo do menu.
-     page-overlay-header puxa o .hero em -header-height, então top precisa
-     compensar 2× para o frame começar na base do header (não atrás dele). */
+     page-overlay-header puxa o .hero em -header-height, então offsets
+     usam 2× header para alinhar à base do menu no viewport. */
   @media (min-width: 961px) {
     .hero {
       background: var(--color-primary);
     }
 
     .hero__slides {
-      /* Compensa page-overlay-header (-header) + folga bordô (~24px) acima da H8. */
-      top: calc(var(--header-height) * 2 + 24px);
+      top: calc(var(--header-height) * 2 + var(--hero-band));
     }
   }
 
@@ -243,24 +250,29 @@ const deferredSlides = slides.slice(1);
     animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
   }
 
-  /* H8: crop leve (~12%) ancorado à esquerda + object-position 0%
-     → desloca Tetê ao máximo à direita sem “zoom” agressivo. */
+  /* H8: picture mais larga ancorada à esquerda → corta a direita
+     e empurra o rosto para o terço direito (reserva coluna de texto). */
   @media (min-width: 768px) {
     .hero__slide--1 picture {
       position: absolute;
       inset: 0 auto 0 0;
-      width: 112%;
+      width: 152%;
       height: 100%;
     }
 
     .hero__slide--1 img {
-      object-position: 0% 0%;
-      transform-origin: 0% 10%;
+      object-position: 58% 0%;
+      transform-origin: 58% 10%;
       animation-name: heroKenBurnsH8;
     }
   }
 
   @media (max-width: 767px) {
+    .hero__slide img {
+      object-position: center 10%;
+      transform-origin: center 12%;
+    }
+
     .hero__slide--1 img {
       object-position: 15% 10%;
       transform-origin: 15% 12%;
@@ -307,25 +319,72 @@ const deferredSlides = slides.slice(1);
     inset: 0;
     background:
       linear-gradient(180deg, rgb(62 25 35 / 0.18) 0%, rgb(62 25 35 / 0.08) 28%, rgb(62 25 35 / 0.72) 100%),
-      linear-gradient(90deg, rgb(36 26 27 / 0.5) 0%, transparent 55%);
+      linear-gradient(90deg, rgb(36 26 27 / 0.58) 0%, rgb(36 26 27 / 0.28) 28%, transparent 42%);
     z-index: 2;
+  }
+
+  /* Rail do eyebrow: só desktop (faixa bordô). Mobile usa --flow no content. */
+  .hero__rail {
+    display: none;
+  }
+
+  @media (min-width: 961px) {
+    .hero__rail {
+      position: absolute;
+      /* 2× header + 10px: abaixo do menu (compensa overlay) com folga anti-clip. */
+      top: calc(var(--header-height) * 2 + 10px);
+      left: 0;
+      right: 0;
+      height: calc(var(--hero-band) - 10px);
+      z-index: 3;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero__rail .hero__eyebrow {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero__eyebrow--flow {
+      display: none;
+    }
   }
 
   .hero__content {
     position: relative;
     z-index: 3;
     padding-block: var(--space-10) var(--space-12);
+    /* Não centrar: .container + max-width estreito colocava a copy em cima do rosto. */
+    width: min(760px, 100% - var(--space-4));
     max-width: 760px;
+    margin-left: max(calc(var(--space-4) / 2), calc((100% - 1180px) / 2));
+    margin-right: auto;
+  }
+
+  @media (min-width: 768px) {
+    .hero__content {
+      width: min(34rem, 40vw);
+      max-width: min(34rem, 40vw);
+    }
   }
 
   .hero__eyebrow {
-    /* Latão (#C2A26B) some no hero claro (H17/H18); osso mantém paleta e AA no overlay. */
+    /* Latão some no hero claro (H17/H18); osso mantém paleta e AA. */
     color: var(--color-background);
     text-shadow: 0 1px 2px rgb(36 26 27 / 0.45);
+    line-height: 1;
+    letter-spacing: 0.18em;
+    margin: 0;
+    padding-block: 2px;
+  }
+
+  .hero__eyebrow--flow {
+    margin-bottom: var(--space-2);
   }
 
   .hero h1 {
-    font-size: var(--text-h1);
+    font-size: clamp(36px, 5.2vw, 64px);
     margin-bottom: var(--space-3);
     text-wrap: balance;
   }
@@ -341,13 +400,6 @@ const deferredSlides = slides.slice(1);
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-  }
-
-  @media (max-width: 767px) {
-    .hero__slide img {
-      object-position: center 10%;
-      transform-origin: center 12%;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
