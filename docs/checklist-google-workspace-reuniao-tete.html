@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checklist — Google Workspace · Tetê Santos</title>
+  <style>
+    :root {
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #e7e5e4;
+      --bg: #fafaf9;
+      --card: #ffffff;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --warn: #9a3412;
+      --warn-soft: #ffedd5;
+      --later: #1e3a8a;
+      --later-soft: #dbeafe;
+      --ok: #166534;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 3rem;
+    }
+    header {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1rem;
+    }
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+    header p { margin: 0.25rem 0; color: var(--muted); font-size: 0.95rem; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+    }
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.28rem 0.6rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .chip.warn { background: var(--warn-soft); color: var(--warn); }
+    .chip.later { background: var(--later-soft); color: var(--later); }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.15rem 1.15rem;
+      margin-bottom: 0.85rem;
+    }
+    section h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    section h2 .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    section.later h2 .badge { background: var(--later-soft); color: var(--later); }
+    section.warn-box {
+      border-color: #fdba74;
+      background: #fffbeb;
+    }
+    ul.checks {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    ul.checks li {
+      display: grid;
+      grid-template-columns: 1.35rem 1fr;
+      gap: 0.65rem;
+      align-items: start;
+      padding: 0.55rem 0.2rem;
+      border-top: 1px solid var(--line);
+    }
+    ul.checks li:first-child { border-top: 0; }
+    ul.checks input[type="checkbox"] {
+      width: 1.15rem;
+      height: 1.15rem;
+      margin-top: 0.15rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    ul.checks label {
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    ul.checks .hint {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    .who {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      margin-right: 0.35rem;
+      vertical-align: 0.05em;
+    }
+    .who.tete { background: #fce7f3; color: #9d174d; }
+    .who.juntos { background: #e0e7ff; color: #3730a3; }
+    .who.voce { background: #dcfce7; color: var(--ok); }
+    .script {
+      margin: 0.35rem 0 0;
+      padding: 0.65rem 0.75rem;
+      background: #f5f5f4;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.88rem;
+      color: #292524;
+    }
+    footer {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.75rem 0 0;
+    }
+    .toolbar button {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.45rem 0.75rem;
+      font: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: #a8a29e; }
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none; }
+      section, header { break-inside: avoid; }
+      input[type="checkbox"] { print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Checklist — Google Workspace (e-mail comercial)</h1>
+      <p><strong>Cliente:</strong> Tetê Santos · <strong>Domínio:</strong> tetesantos.com.br</p>
+      <p><strong>Reunião presencial:</strong> contratação + te habilitar como admin. Configuração DNS/MX você faz depois.</p>
+      <p><strong>Status 01/08/2026:</strong> parte técnica concluída — ver <code>docs/ops-email-gtm.md</code>. Mailbox <code>tetesantos@</code> + alias <code>contato@</code>; MX/SPF/DKIM ok; DMARC <code>p=quarantine</code>; Web3Forms → <code>contato@</code>.</p>
+      <div class="meta">
+        <span class="chip">Concluído técnico · 01/08</span>
+        <span class="chip">Ao vivo · com a Tetê</span>
+        <span class="chip later">Sua parte · depois</span>
+      </div>
+      <div class="toolbar">
+        <button type="button" onclick="window.print()">Imprimir / PDF</button>
+        <button type="button" onclick="document.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false)">Limpar checks</button>
+      </div>
+    </header>
+
+    <section class="warn-box">
+      <h2>Antes de começar (2 min)</h2>
+      <ul class="checks">
+        <li>
+          <input type="checkbox" id="pre1" />
+          <label for="pre1">
+            <span class="who juntos">Juntos</span>
+            Confirmar objetivo em uma frase
+            <span class="hint">“Vamos contratar o e-mail profissional @tetesantos.com.br no Google. Você assina; eu configuro tudo depois.”</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="pre2" />
+          <label for="pre2">
+            <span class="who tete">Tetê</span>
+            Ter à mão: celular (SMS), cartão/Pix da contratação, e-mail pessoal atual (Hotmail)
+            <span class="hint">Hotmail continua só como contato de recuperação por enquanto.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="pre3" />
+          <label for="pre3">
+            <span class="who voce">Você</span>
+            Anotar o e-mail que ela vai usar para te convidar como admin
+            <span class="hint">Ex.: seu Gmail pessoal Sarmy. Evite e-mail que ainda não existe no domínio.</span>
+          </label>
+        </li>
+      </ul>
+      <p class="script">Fala pronta: “Você não precisa configurar DNS nem MX. Só contratar e me colocar como administrador. O resto eu faço daqui.”</p>
+    </section>
+
+    <section>
+      <h2><span class="badge">1 · Ao vivo</span> Contratação Google Workspace</h2>
+      <ul class="checks">
+        <li>
+          <input type="checkbox" id="c1" />
+          <label for="c1">
+            <span class="who tete">Tetê</span>
+            Abrir no notebook/celular dela: <strong>workspace.google.com</strong> → Começar / Experimentar
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="c2" />
+          <label for="c2">
+            <span class="who juntos">Juntos</span>
+            Escolher plano adequado (geralmente <strong>Business Starter</strong> basta no início)
+            <span class="hint">1–3 usuários: ela + eventualmente você/assistente. Pode começar com 1 e adicionar depois.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="c3" />
+          <label for="c3">
+            <span class="who tete">Tetê</span>
+            Informar que <strong>já tem domínio</strong>: <code>tetesantos.com.br</code>
+            <span class="hint">Não comprar domínio novo no Google. Usar o domínio do site.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="c4" />
+          <label for="c4">
+            <span class="who tete">Tetê</span>
+            Criar o usuário admin dela (ex.: <code>tete@tetesantos.com.br</code> ou <code>contato@…</code>)
+            <span class="hint">Anotar usuário + senha num lugar seguro dela (celular / gerenciador). Você não precisa da senha dela se for Super Admin.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="c5" />
+          <label for="c5">
+            <span class="who tete">Tetê</span>
+            Completar dados da empresa / faturamento no nome dela
+            <span class="hint">Conta e cobrança ficam dela. Você só opera a parte técnica.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="c6" />
+          <label for="c6">
+            <span class="who juntos">Juntos</span>
+            Se pedir verificação do domínio agora: <strong>adiar</strong> (“vamos fazer depois, com o técnico”)
+            <span class="hint">Pode aparecer TXT/MX. Não alterar DNS na reunião se você não for configurar na hora.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="c7" />
+          <label for="c7">
+            <span class="who tete">Tetê</span>
+            Confirmar que a assinatura/trial foi criada (e-mail de boas-vindas do Google)
+          </label>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="badge">2 · Ao vivo</span> Te habilitar como admin</h2>
+      <ul class="checks">
+        <li>
+          <input type="checkbox" id="a1" />
+          <label for="a1">
+            <span class="who juntos">Juntos</span>
+            Entrar em <strong>Admin Console</strong>: <code>admin.google.com</code> (logada como ela)
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="a2" />
+          <label for="a2">
+            <span class="who tete">Tetê</span>
+            Diretório → Usuários → <strong>Adicionar usuário</strong> (sua conta de trabalho) <em>ou</em> ir direto em Administradores
+            <span class="hint">Caminho comum: Menu → Conta → Usuários administradores → Atribuir função / Convidar.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="a3" />
+          <label for="a3">
+            <span class="who tete">Tetê</span>
+            Convidar <strong>seu e-mail</strong> com função <strong>Super Admin</strong> (ou Admin com acesso a Domínios + Gmail + Contas)
+            <span class="hint">Super Admin é o mais simples para você configurar tudo sem pedir senha dela de novo.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="a4" />
+          <label for="a4">
+            <span class="who voce">Você</span>
+            Aceitar o convite no seu e-mail / celular <strong>ainda na reunião</strong>
+            <span class="hint">Confirmar que consegue abrir admin.google.com na conta convidada.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="a5" />
+          <label for="a5">
+            <span class="who juntos">Juntos</span>
+            Teste rápido: você vê o domínio <code>tetesantos.com.br</code> no Admin
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="a6" />
+          <label for="a6">
+            <span class="who tete">Tetê</span>
+            Ativar verificação em 2 etapas na conta dela (se o Google pedir)
+            <span class="hint">Segurança dela. Você também ativa 2FA na sua conta admin depois.</span>
+          </label>
+        </li>
+      </ul>
+      <p class="script">Fala pronta: “Com isso eu configuro o DNS, DKIM e as caixas sem te atrapalhar. A conta e a fatura continuam suas.”</p>
+    </section>
+
+    <section>
+      <h2><span class="badge">3 · Ao vivo</span> Decisões rápidas (anotar)</h2>
+      <ul class="checks">
+        <li>
+          <input type="checkbox" id="d1" />
+          <label for="d1">
+            Caixas desejadas (marque o que ela quiser):
+            <span class="hint">
+              ☐ tete@tetesantos.com.br &nbsp;
+              ☐ contato@tetesantos.com.br &nbsp;
+              ☐ comercial@… &nbsp;
+              ☐ outro: _______________
+            </span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="d2" />
+          <label for="d2">
+            O que fazer com <code>tecasantos26@hotmail.com</code>?
+            <span class="hint">
+              ☐ Manter só pessoal &nbsp;
+              ☐ Encaminhar temporário para Google &nbsp;
+              ☐ Avisar contatos da troca em X dias
+            </span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="d3" />
+          <label for="d3">
+            Destino dos leads do site (Web3Forms) depois da migração
+            <span class="hint">Preferência: <code>contato@</code> ou <code>tete@</code> no Google — você altera Recipient no Web3Forms depois do MX no ar.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="d4" />
+          <label for="d4">
+            Prazo combinado para você ligar o e-mail (ex.: “até amanhã / até sexta”)
+          </label>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2><span class="badge">4 · Ao vivo</span> Encerramento da reunião</h2>
+      <ul class="checks">
+        <li>
+          <input type="checkbox" id="e1" />
+          <label for="e1">
+            Confirmar: contratação ok + você é Super Admin + lista de caixas anotada
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="e2" />
+          <label for="e2">
+            <span class="who tete">Tetê</span>
+            Não mudar nada no Cloudflare / Registro.br até você avisar
+            <span class="hint">Evita site ou e-mail quebrarem no meio do caminho.</span>
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="e3" />
+          <label for="e3">
+            Alinhar: Hotmail ainda pode não receber leads do site; após Google no ar, testamos de novo
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="e4" />
+          <label for="e4">
+            Tirar print ou anotar: plano contratado, nº de usuários, e-mail admin dela
+          </label>
+        </li>
+      </ul>
+    </section>
+
+    <section class="later">
+      <h2><span class="badge">Depois · você sozinho</span> Configuração técnica (fora da reunião)</h2>
+      <ul class="checks">
+        <li>
+          <input type="checkbox" id="p1" checked disabled />
+          <label for="p1">Verificar domínio no Admin (TXT no Cloudflare DNS de tetesantos.com.br) <strong>· feito 01/08</strong></label>
+        </li>
+        <li>
+          <input type="checkbox" id="p2" checked disabled />
+          <label for="p2">Publicar MX do Google Workspace (e remover MX antigos se houver) <strong>· feito</strong></label>
+        </li>
+        <li>
+          <input type="checkbox" id="p3" checked disabled />
+          <label for="p3">Ativar SPF / DKIM / DMARC recomendados pelo Google <strong>· feito</strong> (DMARC em <code>quarantine</code>; <code>reject</code> depois)</label>
+        </li>
+        <li>
+          <input type="checkbox" id="p4" checked disabled />
+          <label for="p4">Criar caixas/aliases combinados + 2FA na sua conta admin <strong>· alias contato@ feito</strong></label>
+        </li>
+        <li>
+          <input type="checkbox" id="p5" checked disabled />
+          <label for="p5">Teste: enviar/receber entre Google ↔ Gmail/Hotmail <strong>· feito</strong> (teste → contato@)</label>
+        </li>
+        <li>
+          <input type="checkbox" id="p6" checked disabled />
+          <label for="p6">Atualizar Recipient do Web3Forms para a caixa Google + 1 teste real do pop-up <strong>· feito</strong></label>
+        </li>
+        <li>
+          <input type="checkbox" id="p7" />
+          <label for="p7">Avisar a Tetê: “e-mail no ar” + como abrir no celular (app Gmail)</label>
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      Arquivo local · site Tetê Santos · checklist reunião · status técnico em <code>docs/ops-email-gtm.md</code>
+    </footer>
+  </div>
+</body>
+</html>
