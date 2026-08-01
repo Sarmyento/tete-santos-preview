@@ -98,14 +98,8 @@ const deferredSlides = slides.slice(1);
     set:html={JSON.stringify({ slides: deferredSlides })}
   />
   <div class="hero__overlay"></div>
-  <!-- Desktop: eyebrow na faixa bordô entre menu e foto. Mobile: fluxo no content. -->
-  <div class="hero__rail">
-    <div class="container">
-      <p class="eyebrow hero__eyebrow">{eyebrow}</p>
-    </div>
-  </div>
   <div class="hero__content">
-    <p class="eyebrow hero__eyebrow hero__eyebrow--flow">{eyebrow}</p>
+    <p class="eyebrow hero__eyebrow">{eyebrow}</p>
     <h1>{title}</h1>
     <p class="hero__subtitle">{subtitle}</p>
     <div class="hero__actions">
@@ -193,8 +187,6 @@ const deferredSlides = slides.slice(1);
 
 <style is:global>
   .hero {
-    /* Faixa bordô visível entre header e foto (cabe eyebrow com folga). */
-    --hero-band: 64px;
     position: relative;
     min-height: min(92vh, 920px);
     display: grid;
@@ -210,16 +202,15 @@ const deferredSlides = slides.slice(1);
     overflow: hidden;
   }
 
-  /* Desktop: header opaco — slides abaixo do menu.
-     page-overlay-header puxa o .hero em -header-height, então offsets
-     usam 2× header para alinhar à base do menu no viewport. */
+  /* Desktop: header opaco — foto flush sob o menu.
+     page-overlay-header puxa o .hero em -header-height; top 2× alinha à base do menu. */
   @media (min-width: 961px) {
     .hero {
       background: var(--color-primary);
     }
 
     .hero__slides {
-      top: calc(var(--header-height) * 2 + var(--hero-band));
+      top: calc(var(--header-height) * 2);
     }
   }
 
@@ -250,19 +241,11 @@ const deferredSlides = slides.slice(1);
     animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
   }
 
-  /* H8: picture mais larga ancorada à esquerda → corta a direita
-     e empurra o rosto para o terço direito (reserva coluna de texto). */
+  /* H8: face à direita + headroom (sem zoom oversized). */
   @media (min-width: 768px) {
-    .hero__slide--1 picture {
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 152%;
-      height: 100%;
-    }
-
     .hero__slide--1 img {
-      object-position: 58% 0%;
-      transform-origin: 58% 10%;
+      object-position: 70% 28%;
+      transform-origin: 70% 24%;
       animation-name: heroKenBurnsH8;
     }
   }
@@ -323,34 +306,6 @@ const deferredSlides = slides.slice(1);
     z-index: 2;
   }
 
-  /* Rail do eyebrow: só desktop (faixa bordô). Mobile usa --flow no content. */
-  .hero__rail {
-    display: none;
-  }
-
-  @media (min-width: 961px) {
-    .hero__rail {
-      position: absolute;
-      /* 2× header + 10px: abaixo do menu (compensa overlay) com folga anti-clip. */
-      top: calc(var(--header-height) * 2 + 10px);
-      left: 0;
-      right: 0;
-      height: calc(var(--hero-band) - 10px);
-      z-index: 3;
-      display: flex;
-      align-items: center;
-    }
-
-    .hero__rail .hero__eyebrow {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero__eyebrow--flow {
-      display: none;
-    }
-  }
-
   .hero__content {
     position: relative;
     z-index: 3;
@@ -373,14 +328,9 @@ const deferredSlides = slides.slice(1);
     /* Latão some no hero claro (H17/H18); osso mantém paleta e AA. */
     color: var(--color-background);
     text-shadow: 0 1px 2px rgb(36 26 27 / 0.45);
-    line-height: 1;
+    line-height: 1.2;
     letter-spacing: 0.18em;
-    margin: 0;
-    padding-block: 2px;
-  }
-
-  .hero__eyebrow--flow {
-    margin-bottom: var(--space-2);
+    margin: 0 0 var(--space-2);
   }
 
   .hero h1 {
