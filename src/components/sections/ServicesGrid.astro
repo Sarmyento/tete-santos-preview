@@ -1,15 +1,11 @@
 ---
-import { assetPath, sitePath } from '../../lib/paths';
+import { sitePath } from '../../lib/paths';
 
 interface Props {
   compact?: boolean;
 }
 
 const { compact = false } = Astro.props;
-
-/** Fundo da dobra Serviços (home) — H13 living, fora da rotação hero H8/H17/H18. */
-const servicesBg = assetPath('/images/sections/services-bg-living.webp');
-const servicesBgAvif = assetPath('/images/sections/services-bg-living.avif');
 
 const services = [
   {
@@ -31,28 +27,8 @@ const services = [
 ];
 ---
 
-<section
-  class:list={['section', 'reveal', 'services-section', { 'section--dark': !compact, 'services-section--media': !compact }]}
->
-  {
-    !compact && (
-      <div class="services-section__media" aria-hidden="true">
-        <picture>
-          <source type="image/avif" srcset={servicesBgAvif} />
-          <img
-            src={servicesBg}
-            alt=""
-            width="1280"
-            height="720"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
-        <div class="services-section__overlay"></div>
-      </div>
-    )
-  }
-  <div class="container services-section__content">
+<section class:list={['section', 'reveal', 'services-section', { 'section--dark': !compact }]}>
+  <div class="container">
     {
       !compact && (
         <div class="section-header">
@@ -94,47 +70,6 @@ const services = [
 </section>
 
 <style>
-  .services-section {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .services-section--media {
-    overflow: hidden;
-  }
-
-  .services-section__media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-
-  .services-section__media picture,
-  .services-section__media img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    object-position: center 40%;
-  }
-
-  .services-section__overlay {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-primary-deep) 78%, transparent) 0%,
-        color-mix(in srgb, var(--color-primary) 88%, transparent) 45%,
-        color-mix(in srgb, var(--color-primary-deep) 92%, transparent) 100%
-      );
-  }
-
-  .services-section__content {
-    position: relative;
-    z-index: 1;
-  }
-
   .services-grid {
     display: grid;
     gap: var(--space-4);
@@ -149,14 +84,12 @@ const services = [
   .service-card {
     padding: var(--space-4);
     border: 1px solid color-mix(in srgb, var(--color-background) 22%, transparent);
-    background: color-mix(in srgb, var(--color-primary-deep) 42%, transparent);
-    backdrop-filter: blur(2px);
+    background: color-mix(in srgb, var(--color-primary-deep) 55%, transparent);
   }
 
   .section:not(.section--dark) .service-card {
     border-color: var(--color-line);
     background: var(--color-white);
-    backdrop-filter: none;
   }
 
   .service-card .motion-line {

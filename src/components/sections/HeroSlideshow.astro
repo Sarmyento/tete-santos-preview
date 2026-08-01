@@ -188,29 +188,28 @@ const deferredSlides = slides.slice(1);
 <style is:global>
   .hero {
     position: relative;
+    /* Mobile: ~92vh; desktop: faixa preenche viewport (compensa overlay -header). */
     min-height: min(92vh, 920px);
     display: grid;
     align-items: end;
     overflow: hidden;
     color: var(--color-background);
     padding-top: var(--header-height);
+    /* Bordô sob o header (overlay transparente no mobile / opaco no desktop). */
+    background: var(--color-primary);
   }
 
   .hero__slides {
     position: absolute;
     inset: 0;
+    /* page-overlay puxa hero em -header; 2× alinha o topo da foto à base do menu. */
+    top: calc(var(--header-height) * 2);
     overflow: hidden;
   }
 
-  /* Desktop: header opaco — foto flush sob o menu.
-     page-overlay-header puxa o .hero em -header-height; top 2× alinha à base do menu. */
   @media (min-width: 961px) {
     .hero {
-      background: var(--color-primary);
-    }
-
-    .hero__slides {
-      top: calc(var(--header-height) * 2);
+      min-height: min(calc(100vh + var(--header-height)), 1168px);
     }
   }
 
@@ -241,7 +240,7 @@ const deferredSlides = slides.slice(1);
     animation: heroKenBurns var(--motion-hero) var(--ease-hero) infinite alternate;
   }
 
-  /* H8: face à direita + headroom (sem zoom oversized). */
+  /* H8 desktop/tablet: face à direita + headroom (sem zoom oversized). */
   @media (min-width: 768px) {
     .hero__slide--1 img {
       object-position: 70% 28%;
@@ -251,14 +250,21 @@ const deferredSlides = slides.slice(1);
   }
 
   @media (max-width: 767px) {
-    .hero__slide img {
-      object-position: center 10%;
-      transform-origin: center 12%;
+    .hero {
+      min-height: min(88vh, 820px);
     }
 
+    .hero__slide img {
+      object-position: center 18%;
+      transform-origin: center 20%;
+    }
+
+    /* H8 mobile: prioriza cabeça/rosto no topo-direita do quadro. */
     .hero__slide--1 img {
-      object-position: 15% 10%;
-      transform-origin: 15% 12%;
+      object-position: 62% 0%;
+      transform-origin: 62% 8%;
+      animation: none;
+      transform: scale(1);
     }
   }
 
