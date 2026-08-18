@@ -1,0 +1,16 @@
+<svg viewBox="0 0 280 320" xmlns="http://www.w3.org/2000/svg" aria-label="Brasão coroado TS — Tetê Santos">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Spectral:wght@500&amp;display=swap');</style>
+  <rect width="280" height="320" fill="#5A2730"/>
+  <g fill="none" stroke="#C2A26B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M118 34 L140 18 L162 34 L158 48 L122 48 Z"/>
+    <path d="M128 48 H152"/>
+    <path d="M140 18 V10"/>
+  </g>
+  <circle cx="128" cy="34" r="2" fill="#C2A26B"/><circle cx="152" cy="34" r="2" fill="#C2A26B"/>
+  <path d="M70 78 L140 58 L210 78 L198 228 L82 228 Z" fill="none" stroke="#C2A26B" stroke-width="1.6"/>
+  <path d="M78 86 L140 68 L202 86 L192 220 L88 220 Z" fill="none" stroke="#C2A26B" stroke-width="0.7"/>
+  <text x="140" y="168" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="72" fill="#F2EBE0" letter-spacing="1">TS</text>
+  <line x1="108" y1="248" x2="172" y2="248" stroke="#C2A26B" stroke-width="0.8"/>
+  <text x="140" y="270" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="16" fill="#F2EBE0" letter-spacing="3">TETÊ SANTOS</text>
+  <text x="140" y="290" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="9" letter-spacing="2.8" fill="#C2A26B">IMÓVEIS DE LUXO</text>
+</svg>

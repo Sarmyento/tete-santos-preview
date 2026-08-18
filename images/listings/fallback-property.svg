@@ -1,0 +1,7 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Imagem indisponivel">
+  <rect width="800" height="600" fill="#E2D8C9"/>
+  <rect x="280" y="180" width="240" height="180" rx="8" fill="#F2EBE0" stroke="#C2A26B" stroke-width="2"/>
+  <path d="M320 300 L360 260 L400 290 L440 250 L480 300 Z" fill="#9C7C4F" opacity="0.45"/>
+  <circle cx="450" cy="230" r="18" fill="#C2A26B" opacity="0.7"/>
+  <text x="400" y="420" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="22" fill="#5A2730">Imagem em atualizacao</text>
+</svg>

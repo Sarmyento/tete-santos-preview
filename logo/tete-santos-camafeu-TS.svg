@@ -1,0 +1,10 @@
+<svg viewBox="0 0 260 300" xmlns="http://www.w3.org/2000/svg" aria-label="Camafeu TS — Tetê Santos">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Spectral:wght@500&amp;display=swap');</style>
+  <rect width="260" height="300" fill="#5A2730"/>
+  <ellipse cx="130" cy="132" rx="88" ry="104" fill="none" stroke="#C2A26B" stroke-width="1.6"/>
+  <ellipse cx="130" cy="132" rx="78" ry="92" fill="none" stroke="#C2A26B" stroke-width="0.7"/>
+  <text x="130" y="152" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="68" fill="#F2EBE0" letter-spacing="1">TS</text>
+  <line x1="78" y1="248" x2="182" y2="248" stroke="#C2A26B" stroke-width="0.8"/>
+  <text x="130" y="270" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="16" fill="#F2EBE0" letter-spacing="3">TETÊ SANTOS</text>
+  <text x="130" y="288" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="9" letter-spacing="2.8" fill="#C2A26B">IMÓVEIS DE LUXO</text>
+</svg>
