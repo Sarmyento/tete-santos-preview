@@ -22,6 +22,14 @@ if (!listing) {
 
 const origin = Astro.site ?? new URL(site.domain);
 const pageUrl = new URL(`/imoveis/${listing.slug}`, origin).href;
+
+/** Título truncado para caber em ~60 chars da SERP (com o sufixo '| Imóveis'). */
+const MAX_TITLE = 50;
+const shortTitle =
+  listing.title.length > MAX_TITLE
+    ? `${listing.title.slice(0, MAX_TITLE - 1).trimEnd()}…`
+    : listing.title;
+
 const jsonLd = [
   listingProductJsonLd(listing, pageUrl, origin.href),
   breadcrumbJsonLd([
@@ -33,8 +41,8 @@ const jsonLd = [
 ---
 
 <BaseLayout
-  title={`${listing.title} | Imóveis`}
-  description={`${listing.title} em ${listing.neighborhood}, ${listing.city}. ${listing.price}. Consultoria Tetê Santos.`}
+  title={`${shortTitle} | Imóveis`}
+  description={`${shortTitle} em ${listing.neighborhood}, ${listing.city}. ${listing.price}. Consultoria Tetê Santos.`}
   image={listing.image}
   jsonLd={jsonLd}
   bodyClass="page-listing-detail"

@@ -11,6 +11,22 @@ function entityAddress() {
   };
 }
 
+/** Logo oficial: logomarca principal E · Maison Déco (variante TS). */
+function entityLogo(origin: string) {
+  return new URL('/logo/tete-santos-maison-deco-TS.svg', origin).href;
+}
+
+/** Ponto de contato primário: WhatsApp (telefone confirmado do site). */
+function contactPoint(site: SiteConfig) {
+  return {
+    '@type': 'ContactPoint',
+    telephone: site.contact.phone,
+    contactType: 'customer service',
+    areaServed: 'BR',
+    availableLanguage: 'Portuguese',
+  };
+}
+
 export function organizationJsonLd(site: SiteConfig, origin: string) {
   const sameAs = Object.values(site.social).filter(Boolean);
   return {
@@ -22,6 +38,8 @@ export function organizationJsonLd(site: SiteConfig, origin: string) {
     areaServed: site.region,
     telephone: site.contact.phone,
     email: site.contact.email,
+    logo: entityLogo(origin),
+    contactPoint: contactPoint(site),
     address: entityAddress(),
     ...(sameAs.length ? { sameAs } : {}),
   };
@@ -46,6 +64,8 @@ export function localBusinessJsonLd(site: SiteConfig, origin: string) {
     url: site.domain || origin,
     telephone: site.contact.phone,
     email: site.contact.email,
+    logo: entityLogo(origin),
+    contactPoint: contactPoint(site),
     areaServed: site.region,
     priceRange: '$$$$',
     address: entityAddress(),

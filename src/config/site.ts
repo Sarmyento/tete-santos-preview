@@ -15,7 +15,7 @@ export const site = {
     message: 'Olá Tetê, gostaria de agendar uma visita.',
   },
   contact: {
-    email: 'tecasantos26@hotmail.com',
+    email: 'contato@tetesantos.com.br',
     phone: '(31) 99638-3100',
   },
   social: {
