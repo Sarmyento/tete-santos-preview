@@ -23,7 +23,8 @@ const waUrl = `https://wa.me/${site.whatsapp.number}?text=${encodeURIComponent(s
 
 <header class:list={['header', { 'header--overlay': overlay }]} data-site-header>
   <div class="container header__inner">
-    <a class="logo" href={sitePath('/')} aria-label={`${site.name}, pagina inicial`}>
+    {/* Sem aria-label: o nome acessível vem do SVG visível e coincide com o texto (WCAG 2.5.3). */}
+    <a class="logo" href={sitePath('/')}>
       <BrandLogo variant="light" class="logo__light" />
       <BrandLogo variant="dark" class="logo__hero" />
     </a>

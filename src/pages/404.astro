@@ -1,0 +1,47 @@
+---
+/**
+ * Sem este arquivo a Cloudflare Pages trata o site como SPA e devolve a home
+ * com status 200 para qualquer URL inexistente (soft-404). Com dist/404.html
+ * a resposta passa a ser 404 de verdade.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config/site';
+import { sitePath } from '../lib/paths';
+---
+
+<BaseLayout
+  title={`Página não encontrada | ${site.name}`}
+  description="A página que você procura não existe ou foi movida."
+  noindex
+>
+  <section class="section not-found">
+    <div class="container container--narrow">
+      <p class="eyebrow">Erro 404</p>
+      <h1>Página não encontrada</h1>
+      <p class="not-found__text">
+        O endereço pode ter sido digitado incorretamente ou o imóvel não está mais disponível.
+      </p>
+      <div class="not-found__actions">
+        <a class="btn btn-accent" href={sitePath('/imoveis')}>Ver imóveis</a>
+        <a class="btn btn-secondary" href={sitePath('/')}>Ir para o início</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    text-align: center;
+  }
+
+  .not-found__text {
+    margin-block: var(--space-3) var(--space-5);
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+</style>
